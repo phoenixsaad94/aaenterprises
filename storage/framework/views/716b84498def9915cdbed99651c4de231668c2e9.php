@@ -1,36 +1,36 @@
-@extends('layout.main') @section('content')
+ <?php $__env->startSection('content'); ?>
 
-@if($errors->has('name'))
-<div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ $errors->first('name') }}</div>
-@endif
-<!-- @if($errors->has('image'))
-<div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ $errors->first('image') }}</div>
-@endif -->
-@if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
-@endif
-@if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
-@endif
+<?php if($errors->has('name')): ?>
+<div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e($errors->first('name')); ?></div>
+<?php endif; ?>
+<!-- <?php if($errors->has('image')): ?>
+<div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e($errors->first('image')); ?></div>
+<?php endif; ?> -->
+<?php if(session()->has('message')): ?>
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e(session()->get('message')); ?></div>
+<?php endif; ?>
+<?php if(session()->has('not_permitted')): ?>
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e(session()->get('not_permitted')); ?></div>
+<?php endif; ?>
 
 <section>
     <div class="container-fluid">
         <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{trans("file.Add Category")}}</button>&nbsp;
-        <!-- <button class="btn btn-primary" data-toggle="modal" data-target="#importCategory"><i class="dripicons-copy"></i> {{trans('file.Import Category')}}</button> -->
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> <?php echo e(trans("file.Add Category")); ?></button>&nbsp;
+        <!-- <button class="btn btn-primary" data-toggle="modal" data-target="#importCategory"><i class="dripicons-copy"></i> <?php echo e(trans('file.Import Category')); ?></button> -->
     </div>
     <div class="table-responsive">
         <table id="category-table" class="table" style="width: 100%">
             <thead>
                 <tr>
                     <th class="not-exported"></th>
-                    <th>{{trans('file.Image')}}</th>
-                    <th>{{trans('file.category')}}</th>
-                    <th>{{trans('file.Parent Category')}}</th>
-                    <th>{{trans('file.Number of Product')}}</th>
-                    <th>{{trans('file.Stock Quantity')}}</th>
-                    <!-- <th>{{trans('file.Stock Worth (Price/Cost)')}}</th> -->
-                    <th class="not-exported">{{trans('file.action')}}</th>
+                    <th><?php echo e(trans('file.Image')); ?></th>
+                    <th><?php echo e(trans('file.category')); ?></th>
+                    <th><?php echo e(trans('file.Parent Category')); ?></th>
+                    <th><?php echo e(trans('file.Number of Product')); ?></th>
+                    <th><?php echo e(trans('file.Stock Quantity')); ?></th>
+                    <!-- <th><?php echo e(trans('file.Stock Worth (Price/Cost)')); ?></th> -->
+                    <th class="not-exported"><?php echo e(trans('file.action')); ?></th>
                 </tr>
             </thead>
         </table>
@@ -41,33 +41,37 @@
 <div id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
     <div role="document" class="modal-dialog">
       <div class="modal-content">
-        {!! Form::open(['route' => 'category.store', 'method' => 'post', 'files' => true]) !!}
+        <?php echo Form::open(['route' => 'category.store', 'method' => 'post', 'files' => true]); ?>
+
         <div class="modal-header">
-          <h5 id="exampleModalLabel" class="modal-title">{{trans('file.Add Category')}}</h5>
+          <h5 id="exampleModalLabel" class="modal-title"><?php echo e(trans('file.Add Category')); ?></h5>
           <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
         </div>
         <div class="modal-body">
-          <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
+          <p class="italic"><small><?php echo e(trans('file.The field labels marked with * are required input fields')); ?>.</small></p>
             <div class="row">
                 <div class="col-md-6 form-group">
-                    <label>{{trans('file.name')}} *</label>
-                    {{Form::text('name',null,array('required' => 'required', 'class' => 'form-control', 'placeholder' => 'Type category name...'))}}
+                    <label><?php echo e(trans('file.name')); ?> *</label>
+                    <?php echo e(Form::text('name',null,array('required' => 'required', 'class' => 'form-control', 'placeholder' => 'Type category name...'))); ?>
+
                 </div>
                 <!-- <div class="col-md-6 form-group">
-                    <label>{{trans('file.Image')}}</label>
+                    <label><?php echo e(trans('file.Image')); ?></label>
                     <input type="file" name="image" class="form-control">
                 </div> -->
                 <div class="col-md-6 form-group">
-                    <label>{{trans('file.Parent Category')}}</label>
-                    {{Form::select('parent_id', $lims_categories, null, ['class' => 'form-control','placeholder' => 'No Parent Category'])}}
+                    <label><?php echo e(trans('file.Parent Category')); ?></label>
+                    <?php echo e(Form::select('parent_id', $lims_categories, null, ['class' => 'form-control','placeholder' => 'No Parent Category'])); ?>
+
                 </div>
             </div>
 
             <div class="form-group">
-              <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
+              <input type="submit" value="<?php echo e(trans('file.submit')); ?>" class="btn btn-primary">
             </div>
         </div>
-        {{ Form::close() }}
+        <?php echo e(Form::close()); ?>
+
       </div>
     </div>
 </div>
@@ -75,39 +79,42 @@
 <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
   <div role="document" class="modal-dialog">
     <div class="modal-content">
-        {{ Form::open(['route' => ['category.update', 1], 'method' => 'PUT', 'files' => true] ) }}
+        <?php echo e(Form::open(['route' => ['category.update', 1], 'method' => 'PUT', 'files' => true] )); ?>
+
       <div class="modal-header">
-        <h5 id="exampleModalLabel" class="modal-title">{{trans('file.Update Category')}}</h5>
+        <h5 id="exampleModalLabel" class="modal-title"><?php echo e(trans('file.Update Category')); ?></h5>
         <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
       </div>
       <div class="modal-body">
-        <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
+        <p class="italic"><small><?php echo e(trans('file.The field labels marked with * are required input fields')); ?>.</small></p>
         <div class="row">
             <div class="col-md-6 form-group">
-                <label>{{trans('file.name')}} *</label>
-                {{Form::text('name',null, array('required' => 'required', 'class' => 'form-control'))}}
+                <label><?php echo e(trans('file.name')); ?> *</label>
+                <?php echo e(Form::text('name',null, array('required' => 'required', 'class' => 'form-control'))); ?>
+
             </div>
             <input type="hidden" name="category_id">
             <!-- <div class="col-md-6 form-group">
-                <label>{{trans('file.Image')}}</label>
+                <label><?php echo e(trans('file.Image')); ?></label>
                 <input type="file" name="image" class="form-control">
             </div> -->
             <div class="col-md-6 form-group">
-                <label>{{trans('file.Parent Category')}}</label>
+                <label><?php echo e(trans('file.Parent Category')); ?></label>
                 <select name="parent_id" class="form-control selectpicker" id="parent">
-                    <option value="">No {{trans('file.parent')}}</option>
-                    @foreach($lims_category_all as $category)
-                    <option value="{{$category->id}}">{{$category->name}}</option>
-                    @endforeach
+                    <option value="">No <?php echo e(trans('file.parent')); ?></option>
+                    <?php $__currentLoopData = $lims_category_all; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($category->id); ?>"><?php echo e($category->name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
-            <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
+            <input type="submit" value="<?php echo e(trans('file.submit')); ?>" class="btn btn-primary">
           </div>
         </div>
-      {{ Form::close() }}
+      <?php echo e(Form::close()); ?>
+
     </div>
   </div>
 </div>
@@ -115,31 +122,34 @@
 <div id="importCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
     <div role="document" class="modal-dialog">
       <div class="modal-content">
-        {!! Form::open(['route' => 'category.import', 'method' => 'post', 'files' => true]) !!}
+        <?php echo Form::open(['route' => 'category.import', 'method' => 'post', 'files' => true]); ?>
+
         <div class="modal-header">
-          <h5 id="exampleModalLabel" class="modal-title">{{trans('file.Import Category')}}</h5>
+          <h5 id="exampleModalLabel" class="modal-title"><?php echo e(trans('file.Import Category')); ?></h5>
           <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
         </div>
         <div class="modal-body">
-            <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
-           <p>{{trans('file.The correct column order is')}} (name*, parent_category) {{trans('file.and you must follow this')}}.</p>
+            <p class="italic"><small><?php echo e(trans('file.The field labels marked with * are required input fields')); ?>.</small></p>
+           <p><?php echo e(trans('file.The correct column order is')); ?> (name*, parent_category) <?php echo e(trans('file.and you must follow this')); ?>.</p>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>{{trans('file.Upload CSV File')}} *</label>
-                        {{Form::file('file', array('class' => 'form-control','required'))}}
+                        <label><?php echo e(trans('file.Upload CSV File')); ?> *</label>
+                        <?php echo e(Form::file('file', array('class' => 'form-control','required'))); ?>
+
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label> {{trans('file.Sample File')}}</label>
-                        <a href="public/sample_file/sample_category.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  {{trans('file.Download')}}</a>
+                        <label> <?php echo e(trans('file.Sample File')); ?></label>
+                        <a href="public/sample_file/sample_category.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  <?php echo e(trans('file.Download')); ?></a>
                     </div>
                 </div>
             </div>
-            <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
+            <input type="submit" value="<?php echo e(trans('file.submit')); ?>" class="btn btn-primary">
         </div>
-        {{ Form::close() }}
+        <?php echo e(Form::close()); ?>
+
       </div>
     </div>
 </div>
@@ -199,9 +209,9 @@
             {"data": "options"},
         ],
         'language': {
-            'lengthMenu': '_MENU_ {{trans("file.records per page")}}',
-             "info":      '<small>{{trans("file.Showing")}} _START_ - _END_ (_TOTAL_)</small>',
-            "search":  '{{trans("file.Search")}}',
+            'lengthMenu': '_MENU_ <?php echo e(trans("file.records per page")); ?>',
+             "info":      '<small><?php echo e(trans("file.Showing")); ?> _START_ - _END_ (_TOTAL_)</small>',
+            "search":  '<?php echo e(trans("file.Search")); ?>',
             'paginate': {
                     'previous': '<i class="dripicons-chevron-left"></i>',
                     'next': '<i class="dripicons-chevron-right"></i>'
@@ -235,7 +245,7 @@
         buttons: [
             {
                 extend: 'pdf',
-                text: '{{trans("file.PDF")}}',
+                text: '<?php echo e(trans("file.PDF")); ?>',
                 exportOptions: {
                     columns: ':visible:Not(.not-exported)',
                     rows: ':visible'
@@ -244,7 +254,7 @@
             },
             {
                 extend: 'csv',
-                text: '{{trans("file.CSV")}}',
+                text: '<?php echo e(trans("file.CSV")); ?>',
                 exportOptions: {
                     columns: ':visible:Not(.not-exported)',
                     rows: ':visible'
@@ -253,7 +263,7 @@
             },
             {
                 extend: 'print',
-                text: '{{trans("file.Print")}}',
+                text: '<?php echo e(trans("file.Print")); ?>',
                 exportOptions: {
                     columns: ':visible:Not(.not-exported)',
                     rows: ':visible'
@@ -261,7 +271,7 @@
                 footer:true
             },
             {
-                text: '{{trans("file.delete")}}',
+                text: '<?php echo e(trans("file.delete")); ?>',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
                     if(user_verified == '1') {
@@ -293,11 +303,13 @@
             },
             {
                 extend: 'colvis',
-                text: '{{trans("file.Column visibility")}}',
+                text: '<?php echo e(trans("file.Column visibility")); ?>',
                 columns: ':gt(0)'
             },
         ],
     } );
 
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layout.main', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\salepro\resources\views/category/create.blade.php ENDPATH**/ ?>

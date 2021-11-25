@@ -150,13 +150,7 @@
                   <?php if($print_barcode_active): ?>
                   <li id="printBarcode-menu"><a href="<?php echo e(route('product.printBarcode')); ?>"><?php echo e(__('file.print_barcode')); ?></a></li>
                   <?php endif; ?>
-                  <?php if($adjustment_active): ?>
-                    <li id="adjustment-list-menu"><a href="<?php echo e(route('qty_adjustment.index')); ?>"><?php echo e(trans('file.Adjustment List')); ?></a></li>
-                    <li id="adjustment-create-menu"><a href="<?php echo e(route('qty_adjustment.create')); ?>"><?php echo e(trans('file.Add Adjustment')); ?></a></li>
-                  <?php endif; ?>
-                  <?php if($stock_count_active): ?>
-                    <li id="stock-count-menu"><a href="<?php echo e(route('stock-count.index')); ?>"><?php echo e(trans('file.Stock Count')); ?></a></li>
-                  <?php endif; ?>
+                  
                 </ul>
               </li>
               <?php endif; ?>
