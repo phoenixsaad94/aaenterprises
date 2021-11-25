@@ -31,11 +31,11 @@ $(document).ready(function () {
             }
         }
     }
-    if(('#btnFullscreen').length > 0) {
-        document.getElementById('btnFullscreen').addEventListener('click', function() {
-            toggleFullscreen();
-        });
-    }
+    // if(('#btnFullscreen').length > 0) {
+    //     document.getElementById('btnFullscreen').addEventListener('click', function() {
+    //         toggleFullscreen();
+    //     });
+    // }
 
     //Custom select
     $('select').selectpicker();
@@ -67,7 +67,7 @@ $(document).ready(function () {
     // ------------------------------------------------------- //
     // Side Navbar Functionality
     // ------------------------------------------------------ //
-    
+
     $('#toggle-btn').on('click', function (e) {
 
         e.preventDefault();

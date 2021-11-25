@@ -180,7 +180,7 @@
                   ?>
                   @if($add_permission_active)
                   <li id="purchase-create-menu"><a href="{{route('purchases.create')}}">{{trans('file.Add Purchase')}}</a></li>
-                  <li id="purchase-import-menu"><a href="{{url('purchases/purchase_by_csv')}}">{{trans('file.Import Purchase By CSV')}}</a></li>
+                  {{-- <li id="purchase-import-menu"><a href="url('purchases/purchase_by_csv') }}">{{trans('file.Import Purchase By CSV')}}</a></li> --}}
                   @endif
                 </ul>
               </li>

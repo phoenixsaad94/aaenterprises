@@ -174,7 +174,7 @@
                   ?>
                   <?php if($add_permission_active): ?>
                   <li id="purchase-create-menu"><a href="<?php echo e(route('purchases.create')); ?>"><?php echo e(trans('file.Add Purchase')); ?></a></li>
-                  <li id="purchase-import-menu"><a href="<?php echo e(url('purchases/purchase_by_csv')); ?>"><?php echo e(trans('file.Import Purchase By CSV')); ?></a></li>
+                  
                   <?php endif; ?>
                 </ul>
               </li>

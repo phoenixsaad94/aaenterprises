@@ -1,106 +1,204 @@
-@extends('layout.main') @section('content')
-@if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
-@endif
+ <?php $__env->startSection('content'); ?>
+<?php if(session()->has('not_permitted')): ?>
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><?php echo e(session()->get('not_permitted')); ?></div>
+<?php endif; ?>
 <section class="forms">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
-                        <h4>{{trans('file.Add Purchase')}}</h4>
+                        <h4><?php echo e(trans('file.Update Purchase')); ?></h4>
                     </div>
                     <div class="card-body">
-                        <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
-                        {!! Form::open(['route' => 'purchases.store', 'method' => 'post', 'files' => true, 'id' => 'purchase-form']) !!}
+                        <p class="italic"><small><?php echo e(trans('file.The field labels marked with * are required input fields')); ?>.</small></p>
+                        <?php echo Form::open(['route' => ['purchases.update', $lims_purchase_data->id], 'method' => 'put', 'files' => true, 'id' => 'purchase-form']); ?>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>{{trans('file.Warehouse')}} *</label>
+                                            <label><?php echo e(trans('file.Reference No')); ?></label>
+                                            <p><strong><?php echo e($lims_purchase_data->reference_no); ?></strong> </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label><?php echo e(trans('file.Warehouse')); ?> *</label>
+                                            <input type="hidden" name="warehouse_id_hidden" value="<?php echo e($lims_purchase_data->warehouse_id); ?>" />
                                             <select required name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select warehouse...">
-                                                @foreach($lims_warehouse_list as $warehouse)
-                                                <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
-                                                @endforeach
+                                                <?php $__currentLoopData = $lims_warehouse_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $warehouse): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($warehouse->id); ?>"><?php echo e($warehouse->name); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>{{trans('file.Supplier')}}</label>
-                                            <select name="supplier_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select supplier...">
-                                                @foreach($lims_supplier_list as $supplier)
-                                                <option value="{{$supplier->id}}">{{$supplier->name .' ('. $supplier->company_name .')'}}</option>
-                                                @endforeach
+                                            <label><?php echo e(trans('file.Supplier')); ?></label>
+                                            <input type="hidden" name="supplier_id_hidden" value="<?php echo e($lims_purchase_data->supplier_id); ?>" />
+                                            <select name="supplier_id" class="selectpicker form-control" data-live-search="true" id="supplier-id" data-live-search-style="begins" title="Select supplier...">
+                                                <?php $__currentLoopData = $lims_supplier_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supplier): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($supplier->id); ?>"><?php echo e($supplier->name .' ('. $supplier->company_name .')'); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                	<div class="col-md-4">
                                         <div class="form-group">
-                                            <label>{{trans('file.Purchase Status')}}</label>
+                                            <label><?php echo e(trans('file.Purchase Status')); ?></label>
+                                            <input type="hidden" name="status_hidden" value="<?php echo e($lims_purchase_data->status); ?>">
                                             <select name="status" class="form-control">
-                                                <option value="1">{{trans('file.Recieved')}}</option>
-                                                <option value="2">{{trans('file.Partial')}}</option>
-                                                <option value="3">{{trans('file.Pending')}}</option>
-                                                <option value="4">{{trans('file.Ordered')}}</option>
+                                                <option value="1"><?php echo e(trans('file.Recieved')); ?></option>
+                                                <option value="2"><?php echo e(trans('file.Partial')); ?></option>
+                                                <option value="3"><?php echo e(trans('file.Pending')); ?></option>
+                                                <option value="4"><?php echo e(trans('file.Ordered')); ?></option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>{{trans('file.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
+                                            <label><?php echo e(trans('file.Attach Document')); ?></label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
                                             <input type="file" name="document" class="form-control" >
-                                            @if($errors->has('extension'))
+                                            <?php if($errors->has('extension')): ?>
                                                 <span>
-                                                   <strong>{{ $errors->first('extension') }}</strong>
+                                                   <strong><?php echo e($errors->first('extension')); ?></strong>
                                                 </span>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="col-md-12 mt-3">
-                                        <label>{{trans('file.Select Product')}}</label>
+                                        <label><?php echo e(trans('file.Select Product')); ?></label>
                                         <div class="search-box input-group">
-                                            <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
+                                            <button type="button" class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                             <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="Please type product code and select..." class="form-control" />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-4">
+                                <div class="row mt-5">
                                     <div class="col-md-12">
-                                        <h5>{{trans('file.Order Table')}} *</h5>
+                                        <h5><?php echo e(trans('file.Order Table')); ?> *</h5>
                                         <div class="table-responsive mt-3">
                                             <table id="myTable" class="table table-hover order-list">
                                                 <thead>
                                                     <tr>
-                                                        <th>{{trans('file.name')}}</th>
-                                                        <th>{{trans('file.Code')}}</th>
-                                                        <!-- <th>{{trans('file.Quantity')}}</th> -->
-                                                        <th>{{trans('Weight')}}</th>
-                                                        <th class="recieved-product-qty d-none">{{trans('file.Recieved')}}</th>
-                                                        <th>{{trans('file.Batch No')}}</th>
-                                                        <!-- <th>{{trans('file.Expired Date')}}</th>
-                                                        <th>{{trans('file.Net Unit Cost')}}</th>
-                                                        <th>{{trans('file.Discount')}}</th>
-                                                        <th>{{trans('file.Tax')}}</th> -->
-                                                        <th>{{trans('file.Subtotal')}}</th>
+                                                        <th><?php echo e(trans('file.name')); ?></th>
+                                                        <th><?php echo e(trans('file.Code')); ?></th>
+                                                        <!-- <th><?php echo e(trans('file.Quantity')); ?></th> -->
+                                                        <th><?php echo e(trans('Weight')); ?></th>
+                                                        <th class="recieved-product-qty d-none"><?php echo e(trans('file.Recieved')); ?></th>
+                                                        <th><?php echo e(trans('file.Batch No')); ?></th>
+                                                        
+                                                        <th><?php echo e(trans('file.Subtotal')); ?></th>
                                                         <th><i class="dripicons-trash"></i></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    <?php
+                                                    $temp_unit_name = [];
+                                                    $temp_unit_operator = [];
+                                                    $temp_unit_operation_value = [];
+                                                    ?>
+                                                    <?php $__currentLoopData = $lims_product_purchase_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product_purchase): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <tr>
+                                                    <?php
+                                                        $product_data = DB::table('products')->find($product_purchase->product_id);
+                                                        if($product_purchase->variant_id) {
+                                                            $product_variant_data = \App\ProductVariant::FindExactProduct($product_data->id, $product_purchase->variant_id)->select('item_code')->first();
+                                                            $product_data->code = $product_variant_data->item_code;
+                                                        }
+
+                                                        $tax = DB::table('taxes')->where('rate', $product_purchase->tax_rate)->first();
+
+                                                        $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
+
+                                                        $unit_name = array();
+                                                        $unit_operator = array();
+                                                        $unit_operation_value = array();
+
+                                                        foreach($units as $unit) {
+                                                            if($product_purchase->purchase_unit_id == $unit->id) {
+                                                                array_unshift($unit_name, $unit->unit_name);
+                                                                array_unshift($unit_operator, $unit->operator);
+                                                                array_unshift($unit_operation_value, $unit->operation_value);
+                                                            }
+                                                            else {
+                                                                $unit_name[]  = $unit->unit_name;
+                                                                $unit_operator[] = $unit->operator;
+                                                                $unit_operation_value[] = $unit->operation_value;
+                                                            }
+                                                        }
+                                                        if($product_data->tax_method == 1){
+                                                            $product_cost = ($product_purchase->net_unit_cost + ($product_purchase->discount / $product_purchase->qty)) / $unit_operation_value[0];
+                                                        }
+                                                        else{
+                                                            $product_cost = (($product_purchase->total + ($product_purchase->discount / $product_purchase->qty)) / $product_purchase->qty) / $unit_operation_value[0];
+                                                        }
+
+
+                                                        $temp_unit_name = $unit_name = implode(",",$unit_name) . ',';
+
+                                                        $temp_unit_operator = $unit_operator = implode(",",$unit_operator) .',';
+
+                                                        $temp_unit_operation_value = $unit_operation_value =  implode(",",$unit_operation_value) . ',';
+
+                                                        $product_batch_data = \App\ProductBatch::select('batch_no', 'expired_date')->find($product_purchase->product_batch_id);
+                                                    ?>
+                                                        <td><?php echo e($product_data->name); ?> <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button> </td>
+                                                        <td><?php echo e($product_data->code); ?></td>
+                                                        <td><input type="number" class="form-control qty" name="qty[]" value="<?php echo e($product_purchase->qty); ?>" step="any" required /></td>
+                                                        <td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="<?php echo e($product_purchase->recieved); ?>" step="any"/></td>
+                                                        <?php if($product_purchase->product_batch_id): ?>
+                                                        <td>
+                                                            <input type="hidden" name="product_batch_id[]" value="<?php echo e($product_purchase->product_batch_id); ?>">
+                                                            <input type="text" class="form-control batch-no" name="batch_no[]" value="<?php echo e($product_batch_data->batch_no); ?>" required/>
+                                                        </td>
+                                                        <!-- <td>
+                                                            <input type="text" class="form-control expired-date" name="expired_date[]" value="<?php echo e($product_batch_data->expired_date); ?>" required/>
+                                                        </td> -->
+                                                        <?php else: ?>
+                                                        <td>
+                                                            <input type="hidden" name="product_batch_id[]">
+                                                            <input type="text" class="form-control batch-no" name="batch_no[]" disabled />
+                                                        </td>
+                                                        <!-- <td>
+                                                            <input type="text" class="form-control expired-date" name="expired_date[]" disabled />
+                                                        </td> -->
+                                                        <?php endif; ?>
+                                                        <!-- <td class="net_unit_cost"><?php echo e(number_format((float)$product_purchase->net_unit_cost, 2, '.', '')); ?> </td>
+                                                        <td class="discount"><?php echo e(number_format((float)$product_purchase->discount, 2, '.', '')); ?></td>
+                                                        <td class="tax"><?php echo e(number_format((float)$product_purchase->tax, 2, '.', '')); ?></td> -->
+                                                        <td class="sub-total"><?php echo e(number_format((float)$product_purchase->total, 2, '.', '')); ?></td>
+                                                        <td><button type="button" class="ibtnDel btn btn-md btn-danger"><?php echo e(trans("file.delete")); ?></button></td>
+                                                        <input type="hidden" class="product-id" name="product_id[]" value="<?php echo e($product_data->id); ?>"/>
+                                                        <input type="hidden" class="product-code" name="product_code[]" value="<?php echo e($product_data->code); ?>"/>
+                                                        <input type="hidden" class="product-cost" name="product_cost[]" value="<?php echo e($product_cost); ?>"/>
+                                                        <input type="hidden" class="purchase-unit" name="purchase_unit[]" value="<?php echo e($unit_name); ?>"/>
+                                                        <input type="hidden" class="purchase-unit-operator" value="<?php echo e($unit_operator); ?>"/>
+                                                        <input type="hidden" class="purchase-unit-operation-value" value="<?php echo e($unit_operation_value); ?>"/>
+                                                        <input type="hidden" class="net_unit_cost" name="net_unit_cost[]" value="<?php echo e($product_purchase->net_unit_cost); ?>" />
+                                                        <input type="hidden" class="discount-value" name="discount[]" value="<?php echo e($product_purchase->discount); ?>" />
+                                                        <input type="hidden" class="tax-rate" name="tax_rate[]" value="<?php echo e($product_purchase->tax_rate); ?>"/>
+                                                        <?php if($tax): ?>
+                                                        <input type="hidden" class="tax-name" value="<?php echo e($tax->name); ?>" />
+                                                        <?php else: ?>
+                                                        <input type="hidden" class="tax-name" value="No Tax" />
+                                                        <?php endif; ?>
+                                                        <input type="hidden" class="tax-method" value="<?php echo e($product_data->tax_method); ?>"/>
+                                                        <input type="hidden" class="tax-value" name="tax[]" value="<?php echo e($product_purchase->tax); ?>" />
+                                                        <input type="hidden" class="subtotal-value" name="subtotal[]" value="<?php echo e($product_purchase->total); ?>" />
+                                                    </tr>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </tbody>
                                                 <tfoot class="tfoot active">
-                                                    <th colspan="2">{{trans('file.Total')}}</th>
-                                                    <th id="total-qty">0</th>
-                                                    <th class="recieved-product-qty d-none"></th>
+                                                    <th colspan="2"><?php echo e(trans('file.Total')); ?></th>
+                                                    <th id="total-qty"><?php echo e($lims_purchase_data->total_qty); ?></th>
                                                     <th></th>
-                                                    {{-- <th></th>
-                                                    <th></th>
-                                                    <th id="total-discount">0.00</th>
-                                                    <th id="total-tax">0.00</th> --}}
-                                                    <th id="total">0.00</th>
+                                                    
+                                                    <th id="total"><?php echo e(number_format((float)$lims_purchase_data->total_cost, 2, '.', '')); ?></th>
                                                     <th><i class="dripicons-trash"></i></th>
                                                 </tfoot>
                                             </table>
@@ -110,81 +208,82 @@
                                 <div class="row">
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <input type="hidden" name="total_qty" />
+                                            <input type="hidden" name="total_qty" value="<?php echo e($lims_purchase_data->total_qty); ?>" />
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <input type="hidden" name="total_discount" />
+                                            <input type="hidden" name="total_discount" value="<?php echo e($lims_purchase_data->total_discount); ?>" />
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <input type="hidden" name="total_tax" />
+                                            <input type="hidden" name="total_tax" value="<?php echo e($lims_purchase_data->total_tax); ?>" />
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <input type="hidden" name="total_cost" />
+                                            <input type="hidden" name="total_cost" value="<?php echo e($lims_purchase_data->total_cost); ?>" />
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <input type="hidden" name="item" />
-                                            <input type="hidden" name="order_tax" />
+                                            <input type="hidden" name="item" value="<?php echo e($lims_purchase_data->item); ?>" />
+                                            <input type="hidden" name="order_tax" value="<?php echo e($lims_purchase_data->order_tax); ?>"/>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <input type="hidden" name="grand_total" />
-                                            <input type="hidden" name="paid_amount" value="0.00" />
-                                            <input type="hidden" name="payment_status" value="1" />
+                                            <input type="hidden" name="grand_total" value="<?php echo e($lims_purchase_data->grand_total); ?>" />
+                                            <input type="hidden" name="paid_amount" value="<?php echo e($lims_purchase_data->paid_amount); ?>" />
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="row mt-3">
+                                <!-- <div class="row mt-5">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>{{trans('file.Order Tax')}}</label>
+                                            <label><?php echo e(trans('file.Order Tax')); ?></label>
+                                            <input type="hidden" name="order_tax_rate_hidden" value="<?php echo e($lims_purchase_data->order_tax_rate); ?>">
                                             <select class="form-control" name="order_tax_rate">
-                                                <option value="0">{{trans('file.No Tax')}}</option>
-                                                @foreach($lims_tax_list as $tax)
-                                                <option value="{{$tax->rate}}">{{$tax->name}}</option>
-                                                @endforeach
+                                                <option value="0"><?php echo e(trans('file.No Tax')); ?></option>
+                                                <?php $__currentLoopData = $lims_tax_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tax): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($tax->rate); ?>"><?php echo e($tax->name); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>
-                                                <strong>{{trans('file.Discount')}}</strong>
+                                                <strong><?php echo e(trans('file.Discount')); ?></strong>
                                             </label>
-                                            <input type="number" name="order_discount" class="form-control" step="any" />
+                                            <input type="number" name="order_discount" class="form-control" value="<?php echo e($lims_purchase_data->order_discount); ?>" step="any" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>
-                                                <strong>{{trans('file.Shipping Cost')}}</strong>
+                                                <strong><?php echo e(trans('file.Shipping Cost')); ?></strong>
                                             </label>
-                                            <input type="number" name="shipping_cost" class="form-control" step="any" />
+                                            <input type="number" name="shipping_cost" class="form-control" value="<?php echo e($lims_purchase_data->shipping_cost); ?>" step="any" />
                                         </div>
                                     </div>
                                 </div> -->
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label>{{trans('file.Note')}}</label>
-                                            <textarea rows="5" class="form-control" name="note"></textarea>
+                                            <label><?php echo e(trans('file.Note')); ?></label>
+                                            <textarea rows="5" class="form-control" name="note" ><?php echo e($lims_purchase_data->note); ?></textarea>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary" id="submit-btn">{{trans('file.submit')}}</button>
+                                    <input type="submit" value="<?php echo e(trans('file.submit')); ?>" class="btn btn-primary" id="submit-button">
                                 </div>
                             </div>
                         </div>
-                        {!! Form::close() !!}
+                        <?php echo Form::close(); ?>
+
                     </div>
                 </div>
             </div>
@@ -192,22 +291,22 @@
     </div>
     <div class="container-fluid">
         <table class="table table-bordered table-condensed totals">
-            <td><strong>{{trans('file.Items')}}</strong>
+            <td><strong><?php echo e(trans('file.Items')); ?></strong>
                 <span class="pull-right" id="item">0.00</span>
             </td>
-            <td><strong>{{trans('file.Total')}}</strong>
+            <td><strong><?php echo e(trans('file.Total')); ?></strong>
                 <span class="pull-right" id="subtotal">0.00</span>
             </td>
-            <!-- <td><strong>{{trans('file.Order Tax')}}</strong>
+            <!-- <td><strong><?php echo e(trans('file.Order Tax')); ?></strong>
                 <span class="pull-right" id="order_tax">0.00</span>
             </td>
-            <td><strong>{{trans('file.Order Discount')}}</strong>
+            <td><strong><?php echo e(trans('file.Order Discount')); ?></strong>
                 <span class="pull-right" id="order_discount">0.00</span>
             </td>
-            <td><strong>{{trans('file.Shipping Cost')}}</strong>
+            <td><strong><?php echo e(trans('file.Shipping Cost')); ?></strong>
                 <span class="pull-right" id="shipping_cost">0.00</span>
             </td> -->
-            <td><strong>{{trans('file.grand total')}}</strong>
+            <td><strong><?php echo e(trans('file.grand total')); ?></strong>
                 <span class="pull-right" id="grand_total">0.00</span>
             </td>
         </table>
@@ -216,58 +315,59 @@
         <div role="document" class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 id="modal-header" class="modal-title"></h5>
+                    <h5 id="modal_header" class="modal-title"></h5>
                     <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label>{{trans('file.Quantity')}}</label>
+                            <label><?php echo e(trans('file.Quantity')); ?></label>
                             <input type="number" name="edit_qty" class="form-control" step="any">
                         </div>
                         <div class="form-group">
-                            <label>{{trans('file.Unit Discount')}}</label>
+                            <label><?php echo e(trans('file.Unit Discount')); ?></label>
                             <input type="number" name="edit_discount" class="form-control" step="any">
                         </div>
                         <div class="form-group">
-                            <label>{{trans('file.Unit Cost')}}</label>
+                            <label><?php echo e(trans('file.Unit Cost')); ?></label>
                             <input type="number" name="edit_unit_cost" class="form-control" step="any">
                         </div>
                         <?php
-                $tax_name_all[] = 'No Tax';
-                $tax_rate_all[] = 0;
-                foreach($lims_tax_list as $tax) {
-                    $tax_name_all[] = $tax->name;
-                    $tax_rate_all[] = $tax->rate;
-                }
-            ?>
+                            $tax_name_all[] = 'No Tax';
+                            $tax_rate_all[] = 0;
+                            foreach($lims_tax_list as $tax) {
+                                $tax_name_all[] = $tax->name;
+                                $tax_rate_all[] = $tax->rate;
+                            }
+                        ?>
                             <div class="form-group">
-                                <label>{{trans('file.Tax Rate')}}</label>
+                                <label><?php echo e(trans('file.Tax Rate')); ?></label>
                                 <select name="edit_tax_rate" class="form-control selectpicker">
-                                    @foreach($tax_name_all as $key => $name)
-                                    <option value="{{$key}}">{{$name}}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = $tax_name_all; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($key); ?>"><?php echo e($name); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>{{trans('file.Product Unit')}}</label>
+                                <label><?php echo e(trans('file.Product Unit')); ?></label>
                                 <select name="edit_unit" class="form-control selectpicker">
                                 </select>
                             </div>
-                            <button type="button" name="update_btn" class="btn btn-primary">{{trans('file.update')}}</button>
+                            <button type="button" name="update_btn" class="btn btn-primary"><?php echo e(trans('file.update')); ?></button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 <script type="text/javascript">
 
-    $("ul#purchase").siblings('a').attr('aria-expanded','true');
+    $("ul#purchase").siblings('a').addClass("active");
     $("ul#purchase").addClass("show");
-    $("ul#purchase #purchase-create-menu").addClass("active");
 
 // array data depend on warehouse
+var lims_product_array = [];
 var product_code = [];
 var product_name = [];
 var product_qty = [];
@@ -291,11 +391,52 @@ var rowindex;
 var customer_group_rate;
 var row_product_cost;
 
+var rownumber = $('table.order-list tbody tr:last').index();
+
+for(rowindex  =0; rowindex <= rownumber; rowindex++){
+
+    product_cost.push(parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-cost').val()));
+    var total_discount = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.discount').text());
+    var quantity = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val());
+    product_discount.push((total_discount / quantity).toFixed(2));
+    tax_rate.push(parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val()));
+    tax_name.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-name').val());
+    tax_method.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-method').val());
+    temp_unit_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val().split(',');
+    unit_name.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val());
+    unit_operator.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit-operator').val());
+    unit_operation_value.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit-operation-value').val());
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val(temp_unit_name[0]);
+}
+
 $('.selectpicker').selectpicker({
     style: 'btn-link',
 });
 
 $('[data-toggle="tooltip"]').tooltip();
+
+//assigning value
+$('select[name="supplier_id"]').val($('input[name="supplier_id_hidden"]').val());
+$('select[name="warehouse_id"]').val($('input[name="warehouse_id_hidden"]').val());
+$('select[name="status"]').val($('input[name="status_hidden"]').val());
+$('select[name="order_tax_rate"]').val($('input[name="order_tax_rate_hidden"]').val());
+$('select[name="purchase_status"]').val($('input[name="purchase_status_hidden"]').val());
+$('.selectpicker').selectpicker('refresh');
+
+$('#item').text($('input[name="item"]').val() + '(' + $('input[name="total_qty"]').val() + ')');
+$('#subtotal').text(parseFloat($('input[name="total_cost"]').val()).toFixed(2));
+$('#order_tax').text(parseFloat($('input[name="order_tax"]').val()).toFixed(2));
+if($('select[name="status"]').val() == 2){
+    $(".recieved-product-qty").removeClass("d-none");
+
+}
+if(!$('input[name="order_discount"]').val())
+    $('input[name="order_discount"]').val('0.00');
+$('#order_discount').text(parseFloat($('input[name="order_discount"]').val()).toFixed(2));
+if(!$('input[name="shipping_cost"]').val())
+    $('input[name="shipping_cost"]').val('0.00');
+$('#shipping_cost').text(parseFloat($('input[name="shipping_cost"]').val()).toFixed(2));
+$('#grand_total').text(parseFloat($('input[name="grand_total"]').val()).toFixed(2));
 
 $('select[name="status"]').on('change', function() {
     if($('select[name="status"]').val() == 2){
@@ -321,18 +462,18 @@ $('select[name="status"]').on('change', function() {
     }
 });
 
-<?php $productArray = []; ?>
+
 var lims_product_code = [
-    @foreach($lims_product_list_without_variant as $product)
+    <?php $__currentLoopData = $lims_product_list_without_variant; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <?php
             $productArray[] = htmlspecialchars($product->code . ' (' . $product->name . ')');
         ?>
-    @endforeach
-    @foreach($lims_product_list_with_variant as $product)
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php $__currentLoopData = $lims_product_list_with_variant; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <?php
             $productArray[] = htmlspecialchars($product->item_code . ' (' . $product->name . ')');
         ?>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         <?php
         echo  '"'.implode('","', $productArray).'"';
         ?>
@@ -369,8 +510,6 @@ $('body').on('focus',".expired-date", function() {
     });
 });
 
-
-
 //Change quantity
 $("#myTable").on('input', '.qty', function() {
     rowindex = $(this).closest('tr').index();
@@ -393,7 +532,6 @@ $("table.order-list tbody").on("click", ".ibtnDel", function(event) {
     unit_name.splice(rowindex, 1);
     unit_operator.splice(rowindex, 1);
     unit_operation_value.splice(rowindex, 1);
-    console.log(product_cost);
     $(this).closest("tr").remove();
     calculateTotal();
 });
@@ -403,7 +541,7 @@ $("table.order-list").on("click", ".edit-product", function() {
     rowindex = $(this).closest('tr').index();
     var row_product_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(1)').text();
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
-    $('#modal-header').text(row_product_name + '(' + row_product_code + ')');
+    $('#modal_header').text(row_product_name + '(' + row_product_code + ')');
 
     var qty = $(this).closest('tr').find('.qty').val();
     $('input[name="edit_qty"]').val(qty);
@@ -485,7 +623,7 @@ $('button[name="update_btn"]').on("click", function() {
 function productSearch(data) {
     $.ajax({
         type: 'GET',
-        url: 'lims_product_search',
+        url: '../lims_product_search',
         data: {
             data: data
         },
@@ -508,9 +646,9 @@ function productSearch(data) {
                 temp_unit_name = (data[6]).split(',');
                 cols += '<td>' + data[0] + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button></td>';
                 cols += '<td>' + data[1] + '</td>';
-                cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" required/></td>';
+                cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" required /></td>';
                 if($('select[name="status"]').val() == 1)
-                    cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
+                    cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any" /></td>';
                 else if($('select[name="status"]').val() == 2)
                     cols += '<td class="recieved-product-qty"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
                 else
@@ -523,12 +661,11 @@ function productSearch(data) {
                     cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" disabled/></td>';
                     cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" disabled/></td>';
                 }
-
                 cols += '<td class="net_unit_cost"></td>';
                 cols += '<td class="discount">0.00</td>';
                 cols += '<td class="tax"></td>';
                 cols += '<td class="sub-total"></td>';
-                cols += '<td><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>';
+                cols += '<td><button type="button" class="ibtnDel btn btn-md btn-danger"><?php echo e(trans("file.delete")); ?></button></td>';
                 cols += '<input type="hidden" class="product-code" name="product_code[]" value="' + data[1] + '"/>';
                 cols += '<input type="hidden" class="product-id" name="product_id[]" value="' + data[9] + '"/>';
                 cols += '<input type="hidden" class="purchase-unit" name="purchase_unit[]" value="' + temp_unit_name[0] + '"/>';
@@ -542,36 +679,35 @@ function productSearch(data) {
                 $("table.order-list tbody").prepend(newRow);
 
                 rowindex = newRow.index();
-                product_cost.splice(rowindex,0, parseFloat(data[2]));
-                product_discount.splice(rowindex,0, '0.00');
-                tax_rate.splice(rowindex,0, parseFloat(data[3]));
-                tax_name.splice(rowindex,0, data[4]);
-                tax_method.splice(rowindex,0, data[5]);
-                unit_name.splice(rowindex,0, data[6]);
-                unit_operator.splice(rowindex,0, data[7]);
-                unit_operation_value.splice(rowindex,0, data[8]);
+                product_cost.splice(rowindex, 0, parseFloat(data[2]));
+                product_discount.splice(rowindex, 0, '0.00');
+                tax_rate.splice(rowindex, 0, parseFloat(data[3]));
+                tax_name.splice(rowindex, 0, data[4]);
+                tax_method.splice(rowindex, 0, data[5]);
+                unit_name.splice(rowindex, 0, data[6]);
+                unit_operator.splice(rowindex, 0, data[7]);
+                unit_operation_value.splice(rowindex, 0, data[8]);
                 calculateRowProductData(1);
             }
-
         }
     });
 }
-
 function checkQuantity(purchase_qty, flag) {
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
     var pos = product_code.indexOf(row_product_code);
     var operator = unit_operator[rowindex].split(',');
     var operation_value = unit_operation_value[rowindex].split(',');
     if(operator[0] == '*')
-        total_qty = purchase_qty * operation_value[0];
+    	total_qty = purchase_qty * operation_value[0];
     else if(operator[0] == '/')
-        total_qty = purchase_qty / operation_value[0];
+    	total_qty = purchase_qty / operation_value[0];
 
     $('#editModal').modal('hide');
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val(purchase_qty);
     var status = $('select[name="status"]').val();
     if(status == '1' || status == '2' )
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.recieved').val(purchase_qty);
+
     calculateRowProductData(purchase_qty);
 }
 
@@ -751,7 +887,6 @@ $('#purchase-form').on('submit',function(e){
         $(".batch-no, .expired-date").prop('disabled', false);
 });
 </script>
-@endsection @section('scripts')
-<script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+<?php $__env->stopSection(); ?>
 
-@endsection
+<?php echo $__env->make('layout.main', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\salepro\resources\views/purchase/edit.blade.php ENDPATH**/ ?>
