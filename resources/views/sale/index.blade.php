@@ -1,9 +1,9 @@
 @extends('layout.main') @section('content')
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -53,7 +53,7 @@
         </div>
         @if(in_array("sales-add", $all_permission))
             <a href="{{route('sales.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{trans('file.Add Sale')}}</a>&nbsp;
-            <a href="{{url('sales/sale_by_csv')}}" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.Import Sale')}}</a>
+            <!-- <a href="{{url('sales/sale_by_csv')}}" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.Import Sale')}}</a> -->
         @endif
     </div>
     <div class="table-responsive">
@@ -65,6 +65,8 @@
                     <th>{{trans('file.reference')}}</th>
                     <th>{{trans('file.Biller')}}</th>
                     <th>{{trans('file.customer')}}</th>
+                    <th>{{trans('Product')}}</th>
+                    <th>{{trans('Weight')}}</th>
                     <th>{{trans('file.Sale Status')}}</th>
                     <th>{{trans('file.Payment Status')}}</th>
                     <th>{{trans('file.grand total')}}</th>
@@ -73,10 +75,12 @@
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
             </thead>
-            
+
             <tfoot class="tfoot active">
                 <th></th>
                 <th>{{trans('file.Total')}}</th>
+                <th></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -98,7 +102,7 @@
                 <div class="row">
                     <div class="col-md-3">
                         <button id="print-btn" type="button" class="btn btn-default btn-sm d-print-none"><i class="dripicons-print"></i> {{trans('file.Print')}}</button>
-                        
+
                         {{ Form::open(['route' => 'sale.sendmail', 'method' => 'post', 'class' => 'sendmail-form'] ) }}
                             <input type="hidden" name="sale_id">
                             <button class="btn btn-default btn-sm d-print-none"><i class="dripicons-mail"></i> {{trans('file.Email')}}</button>
@@ -203,12 +207,12 @@
                     <div class="gift-card form-group">
                         <label> {{trans('file.Gift Card')}} *</label>
                         <select id="gift_card_id" name="gift_card_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select Gift Card...">
-                            @php 
+                            @php
                                 $balance = [];
                                 $expired_date = [];
                             @endphp
                             @foreach($lims_gift_card_list as $gift_card)
-                            <?php 
+                            <?php
                                 $balance[$gift_card->id] = $gift_card->amount - $gift_card->expense;
                                 $expired_date[$gift_card->id] = $gift_card->expired_date;
                             ?>
@@ -397,7 +401,7 @@
     var all_permission = <?php echo json_encode($all_permission) ?>;
     var sale_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -511,9 +515,9 @@
             $('#view-payment').modal('show');
         });
     });
-    
+
     $("table.payment-list").on("click", ".edit-btn", function(event) {
-        $(".edit-btn").attr('data-clicked', true);        
+        $(".edit-btn").attr('data-clicked', true);
         $(".card-element").hide();
         $("#edit-cheque").hide();
         $('.gift-card').hide();
@@ -558,7 +562,7 @@
         $('#view-payment').modal('hide');
     });
 
-    $('select[name="paid_by_id"]').on("change", function() {       
+    $('select[name="paid_by_id"]').on("change", function() {
         var id = $(this).val();
         $('input[name="cheque_no"]').attr('required', false);
         $('#add-payment select[name="gift_card_id"]').attr('required', false);
@@ -593,7 +597,7 @@
             }
         }
     });
-    
+
     $('#add-payment select[name="gift_card_id"]').on("change", function() {
         var id = $(this).val();
         if(expired_date[id] < current_date)
@@ -630,7 +634,7 @@
         }
     });
 
-    $('select[name="edit_paid_by_id"]').on("change", function() {        
+    $('select[name="edit_paid_by_id"]').on("change", function() {
         var id = $(this).val();
         $('input[name="edit_cheque_no"]').attr('required', false);
         $('#edit-payment select[name="gift_card_id"]').attr('required', false);
@@ -713,10 +717,10 @@
         });
     });
 
-    var starting_date = $("input[name=starting_date]").val(); 
+    var starting_date = $("input[name=starting_date]").val();
     var ending_date = $("input[name=ending_date]").val();
     var warehouse_id = $("#warehouse_id").val();
-    
+
     $('#sale-table').DataTable( {
         "processing": true,
         "serverSide": true,
@@ -742,6 +746,8 @@
             {"data": "reference_no"},
             {"data": "biller"},
             {"data": "customer"},
+            {"data": "biller"},
+            {"data": "grand_total"},
             {"data": "sale_status"},
             {"data": "payment_status"},
             {"data": "grand_total"},
@@ -750,7 +756,7 @@
             {"data": "options"},
         ],
         'language': {
-            
+
             'lengthMenu': '_MENU_ {{trans("file.records per page")}}',
              "info":      '<small>{{trans("file.Showing")}} _START_ - _END_ (_TOTAL_)</small>',
             "search":  '{{trans("file.Search")}}',
@@ -763,7 +769,8 @@
         'columnDefs': [
             {
                 "orderable": false,
-                'targets': [0, 3, 4, 5, 6, 9, 10]
+                // 'targets': [0, 3, 4, 5, 6, 9, 10,]
+                'targets': [0, 3, 4, 5, 6, 7, 8, 11, 12]
             },
             {
                 'render': function(data, type, row, meta){
@@ -997,10 +1004,10 @@
             $(".change").text(parseFloat( $('input[name="edit_paying_amount"]').val() - $('input[name="edit_amount"]').val() ).toFixed(2));
             e.preventDefault();
         }
-        
+
         $('#edit-payment select[name="edit_paid_by_id"]').prop('disabled', false);
     });
-    
+
     if(all_permission.indexOf("sales-delete") == -1)
         $('.buttons-delete').addClass('d-none');
 

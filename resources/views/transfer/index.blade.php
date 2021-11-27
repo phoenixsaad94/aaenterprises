@@ -1,16 +1,16 @@
 @extends('layout.main') @section('content')
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
     <div class="container-fluid">
         @if(in_array("transfers-add", $all_permission))
             <a href="{{route('transfers.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{trans('file.add')}} {{trans('file.Transfer')}}</a>
-            <a href="{{url('transfers/transfer_by_csv')}}" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.import')}} {{trans('file.Transfer')}}</a>
+            <!-- <a href="{{url('transfers/transfer_by_csv')}}" class="btn btn-primary"><i class="dripicons-copy"></i> {{trans('file.import')}} {{trans('file.Transfer')}}</a> -->
         @endif
     </div>
     <div class="table-responsive">
@@ -22,16 +22,18 @@
                     <th>{{trans('file.reference')}} No</th>
                     <th>{{trans('file.Warehouse')}}({{trans('file.From')}})</th>
                     <th>{{trans('file.Warehouse')}}({{trans('file.To')}})</th>
-                    <th>{{trans('file.product')}} {{trans('file.Cost')}}</th>
+                    <th>{{trans('Product')}}</th>
+                    <th>{{trans('Weight')}}</th>
+                    <!-- <th>{{trans('file.product')}} {{trans('file.Cost')}}</th>
                     <th>{{trans('file.product')}} {{trans('file.Tax')}}</th>
-                    <th>{{trans('file.grand total')}}</th>
+                    <th>{{trans('file.grand total')}}</th> -->
                     <th>{{trans("file.Status")}}</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($lims_transfer_all as $key=>$transfer)
-                <?php                     
+                <?php
                     if($transfer->status == 1)
                         $status = trans('file.Completed');
                     elseif($transfer->status == 2)
@@ -45,9 +47,11 @@
                     <td>{{ $transfer->reference_no }}</td>
                     <td>{{ $transfer->fromWarehouse->name }}</td>
                     <td>{{ $transfer->toWarehouse->name }}</td>
-                    <td class="total-cost">{{ $transfer->total_cost }}</td>
+                    <td>{{ $transfer->reference_no }}</td>
+                    <td >{{ $transfer->grand_total }}</td>
+                    <!-- <td class="total-cost">{{ $transfer->total_cost }}</td>
                     <td class="total-tax">{{ $transfer->total_tax }}</td>
-                    <td class="grand-total">{{ $transfer->grand_total }}</td>
+                    <td class="grand-total">{{ $transfer->grand_total }}</td> -->
                     @if($transfer->status == 1)
                         <td><div class="badge badge-success">{{$status}}</div></td>
                     @elseif($transfer->status == 2)
@@ -65,7 +69,7 @@
                                 </li>
                                 @if(in_array("transfers-edit", $all_permission))
                                 <li>
-                                    <a href="{{ route('transfers.edit', $transfer->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a> 
+                                    <a href="{{ route('transfers.edit', $transfer->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a>
                                 </li>
                                 @endif
                                 <li class="divider"></li>
@@ -90,7 +94,9 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <!-- <th></th>
                 <th></th>
+                <th></th> -->
                 <th></th>
                 <th></th>
             </tfoot>
@@ -146,7 +152,7 @@
     var all_permission = <?php echo json_encode($all_permission) ?>;
     var transfer_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

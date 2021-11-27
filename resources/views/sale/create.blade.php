@@ -1,6 +1,6 @@
 @extends('layout.main') @section('content')
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 <section class="forms">
     <div class="container-fluid">
@@ -19,7 +19,8 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>
-                                                {{trans('file.Reference No')}}
+                                                <!-- {{trans('file.Reference No')}} -->
+                                                {{trans('Challan No')}}
                                             </label>
                                             <input type="text" name="reference_no" class="form-control" />
                                         </div>
@@ -672,7 +673,7 @@ function productSearch(data) {
                 else {
                     cols += '<td><input type="text" class="form-control batch-no" disabled/> <input type="hidden" class="product-batch-id" name="product_batch_id[]"/> </td>';
                 }
-                
+
                 cols += '<td class="net_unit_price"></td>';
                 cols += '<td class="discount">0.00</td>';
                 cols += '<td class="tax"></td>';
@@ -690,7 +691,7 @@ function productSearch(data) {
                 newRow.append(cols);
                 $("table.order-list tbody").prepend(newRow);
                 rowindex = newRow.index();
-                
+
                 if(!data[11] && product_warehouse_price[pos]) {
                     product_price.splice(rowindex, 0, parseFloat(product_warehouse_price[pos] * currency['exchange_rate']) + parseFloat(product_warehouse_price[pos] * currency['exchange_rate'] * customer_group_rate));
                 }
@@ -985,13 +986,13 @@ $('select[name="paid_by_id"]').on("change", function() {
         $(".card-element").show();
         $("#gift-card").hide();
         $("#cheque").hide();
-    } 
+    }
     else if (id == 4) {
         $("#cheque").show();
         $("#gift-card").hide();
         $(".card-element").hide();
         $('input[name="cheque_no"]').attr('required', true);
-    } 
+    }
     else {
         $("#gift-card").hide();
         $(".card-element").hide();
