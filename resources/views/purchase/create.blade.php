@@ -1,4 +1,5 @@
-@extends('layout.main') @section('content')
+@extends('layout.main')
+@section('content')
 @if(session()->has('not_permitted'))
   <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
@@ -40,16 +41,17 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>{{trans('file.Purchase Status')}}</label>
-                                            <select name="status" class="form-control">
+                                            <!-- <label>{{trans('file.Purchase Status')}}</label> -->
+                                            <input type="hidden" name="status" value="1">
+                                            <!-- <select name="status" class="form-control">
                                                 <option value="1">{{trans('file.Recieved')}}</option>
                                                 <option value="2">{{trans('file.Partial')}}</option>
                                                 <option value="3">{{trans('file.Pending')}}</option>
                                                 <option value="4">{{trans('file.Ordered')}}</option>
-                                            </select>
+                                            </select> -->
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <!-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label>{{trans('file.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
                                             <input type="file" name="document" class="form-control" >
@@ -59,7 +61,7 @@
                                                 </span>
                                             @endif
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-md-12 mt-3">
                                         <label>{{trans('file.Select Product')}}</label>
                                         <div class="search-box input-group">
@@ -75,33 +77,38 @@
                                             <table id="myTable" class="table table-hover order-list">
                                                 <thead>
                                                     <tr>
-                                                        <th>{{trans('file.name')}}</th>
+                                                        <th width="50%" >{{trans('file.name')}}</th>
                                                         <th>{{trans('file.Code')}}</th>
                                                         <!-- <th>{{trans('file.Quantity')}}</th> -->
-                                                        <th>{{trans('Weight')}}</th>
-                                                        <th class="recieved-product-qty d-none">{{trans('file.Recieved')}}</th>
-                                                        <th>{{trans('file.Batch No')}}</th>
+                                                        <th>{{trans('file.Weight')}}</th>
+                                                        <!-- <th>{{trans('file.Net Cost')}}</th> -->
+                                                        <!-- <th class="recieved-product-qty d-none">{{trans('file.Recieved')}}</th> -->
+                                                        <!-- <th>{{trans('file.Batch No')}}</th> -->
                                                         <!-- <th>{{trans('file.Expired Date')}}</th>
                                                         <th>{{trans('file.Net Unit Cost')}}</th>
                                                         <th>{{trans('file.Discount')}}</th>
                                                         <th>{{trans('file.Tax')}}</th> -->
-                                                        <th>{{trans('file.Subtotal')}}</th>
+                                                        <!-- <th>{{trans('file.Subtotal')}}</th> -->
                                                         <th><i class="dripicons-trash"></i></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                 </tbody>
                                                 <tfoot class="tfoot active">
-                                                    <th colspan="2">{{trans('file.Total')}}</th>
-                                                    <th id="total-qty">0</th>
-                                                    <th class="recieved-product-qty d-none"></th>
-                                                    <th></th>
-                                                    {{-- <th></th>
-                                                    <th></th>
-                                                    <th id="total-discount">0.00</th>
-                                                    <th id="total-tax">0.00</th> --}}
-                                                    <th id="total">0.00</th>
-                                                    <th><i class="dripicons-trash"></i></th>
+                                                    <tr>
+                                                        <th width="50%">{{trans('file.Total')}}</th>
+                                                        <th ></th>
+                                                        <th id="total-qty">0</th>
+                                                        <!-- <th id="total-cost">0</th> -->
+                                                        {{-- <th class="recieved-product-qty d-none"></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th id="total-discount">0.00</th>
+                                                        <th id="total-tax">0.00</th>
+                                                        <th id="total">0.00</th> --}}
+                                                        <th><i class="dripicons-trash"></i></th>
+                                                    </tr>
                                                 </tfoot>
                                             </table>
                                         </div>
@@ -132,11 +139,14 @@
                                         <div class="form-group">
                                             <input type="hidden" name="item" />
                                             <input type="hidden" name="order_tax" />
+                                            <input type="hidden" name="order_tax_rate" value="0.00" />
+                                            <input type="hidden" name="order_discount" value="0.00" />
+                                            <input type="hidden" name="shipping_cost" value="0.00" />
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <input type="hidden" name="grand_total" />
+                                            <input type="hidden" name="grand_total" value="0.00" />
                                             <input type="hidden" name="paid_amount" value="0.00" />
                                             <input type="hidden" name="payment_status" value="1" />
                                         </div>
@@ -193,12 +203,18 @@
     <div class="container-fluid">
         <table class="table table-bordered table-condensed totals">
             <td><strong>{{trans('file.Items')}}</strong>
-                <span class="pull-right" id="item">0.00</span>
+                <span class="pull-right" id="item">0</span>
             </td>
-            <td><strong>{{trans('file.Total')}}</strong>
+            <td><strong>{{trans('file.Total Weight')}}</strong>
+                <span class="pull-right" id="total_weight">0</span>
+            </td>
+            <!-- <td><strong>{{trans('file.Total Cost')}}</strong>
+                <span class="pull-right" id="total_amount">0</span>
+            </td> -->
+            <!-- <td><strong>{{trans('file.Total')}}</strong>
                 <span class="pull-right" id="subtotal">0.00</span>
             </td>
-            <!-- <td><strong>{{trans('file.Order Tax')}}</strong>
+            <td><strong>{{trans('file.Order Tax')}}</strong>
                 <span class="pull-right" id="order_tax">0.00</span>
             </td>
             <td><strong>{{trans('file.Order Discount')}}</strong>
@@ -206,10 +222,10 @@
             </td>
             <td><strong>{{trans('file.Shipping Cost')}}</strong>
                 <span class="pull-right" id="shipping_cost">0.00</span>
-            </td> -->
+            </td>
             <td><strong>{{trans('file.grand total')}}</strong>
                 <span class="pull-right" id="grand_total">0.00</span>
-            </td>
+            </td> -->
         </table>
     </div>
     <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
@@ -221,18 +237,18 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div class="form-group">
+                        <input type="hidden" name="edit_qty" class="form-control" step="any">
+                        <!-- <div class="form-group">
                             <label>{{trans('file.Quantity')}}</label>
-                            <input type="number" name="edit_qty" class="form-control" step="any">
-                        </div>
-                        <div class="form-group">
+                        </div> -->
+                        <!-- <div class="form-group">
                             <label>{{trans('file.Unit Discount')}}</label>
                             <input type="number" name="edit_discount" class="form-control" step="any">
-                        </div>
-                        <div class="form-group">
+                        </div> -->
+                        <!-- <div class="form-group">
                             <label>{{trans('file.Unit Cost')}}</label>
                             <input type="number" name="edit_unit_cost" class="form-control" step="any">
-                        </div>
+                        </div> -->
                         <?php
                 $tax_name_all[] = 'No Tax';
                 $tax_rate_all[] = 0;
@@ -241,18 +257,56 @@
                     $tax_rate_all[] = $tax->rate;
                 }
             ?>
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label>{{trans('file.Tax Rate')}}</label>
                                 <select name="edit_tax_rate" class="form-control selectpicker">
                                     @foreach($tax_name_all as $key => $name)
                                     <option value="{{$key}}">{{$name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="form-group">
-                                <label>{{trans('file.Product Unit')}}</label>
+                                <!-- <label>{{trans('file.Product Unit')}}</label> -->
+                                <label>{{'Color'}}</label>
                                 <select name="edit_unit" class="form-control selectpicker">
+                                    <option value="1">Any</option>
+                                    <option value="2">Red</option>
+                                    <option value="3">Blue</option>
+                                    <option value="4">Green</option>
+                                    <option value="5">White</option>
+                                    <option value="6">Black</option>
                                 </select>
+                            </div>
+
+                            <div  class="row">
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Length Number'}}</label>
+                                        <input type="number" name="edit_unit_value_2" class="form-control" value="" />
+                                    </div>
+                                </div>
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Length Unit'}}</label>
+                                        <select name="edit_unit_2" class="form-control selectpicker">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="row">
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Width Number'}}</label>
+                                        <input type="number" name="edit_unit_value_3" class="form-control" value="" />
+                                    </div>
+                                </div>
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Width Unit'}}</label>
+                                        <select name="edit_unit_3" class="form-control selectpicker">
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <button type="button" name="update_btn" class="btn btn-primary">{{trans('file.update')}}</button>
                     </form>
@@ -274,11 +328,16 @@ var product_qty = [];
 
 // array data with selection
 var product_cost = [];
+var product_net_cost = [];
 var product_discount = [];
 var tax_rate = [];
 var tax_name = [];
 var tax_method = [];
 var unit_name = [];
+var unit_name_2 = [];
+var unit_value_2 = [];
+var unit_name_3 = [];
+var unit_value_3 = [];
 var unit_operator = [];
 var unit_operation_value = [];
 
@@ -338,9 +397,9 @@ var lims_product_code = [
         ?>
 ];
 
-    var lims_productcodeSearch = $('#lims_productcodeSearch');
+var lims_productcodeSearch = $('#lims_productcodeSearch');
 
-    lims_productcodeSearch.autocomplete({
+lims_productcodeSearch.autocomplete({
     source: function(request, response) {
         var matcher = new RegExp(".?" + $.ui.autocomplete.escapeRegex(request.term), "i");
         response($.grep(lims_product_code, function(item) {
@@ -369,8 +428,6 @@ $('body').on('focus',".expired-date", function() {
     });
 });
 
-
-
 //Change quantity
 $("#myTable").on('input', '.qty', function() {
     rowindex = $(this).closest('tr').index();
@@ -381,19 +438,33 @@ $("#myTable").on('input', '.qty', function() {
     checkQuantity($(this).val(), true);
 });
 
+//Change net cost
+// $("#myTable").on('input', '.net_cost', function() {
+//     rowindex = $(this).closest('tr').index();
+//     if($(this).val() < 0 && $(this).val() != '') {
+//       $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .net_cost').val(1);
+//       alert("Net Product Cost can't be less than 0");
+//     }
+//     calculateTotal();
+// });
 
 //Delete product
 $("table.order-list tbody").on("click", ".ibtnDel", function(event) {
     rowindex = $(this).closest('tr').index();
     product_cost.splice(rowindex, 1);
+    product_net_cost.splice(rowindex, 1);
     product_discount.splice(rowindex, 1);
     tax_rate.splice(rowindex, 1);
     tax_name.splice(rowindex, 1);
     tax_method.splice(rowindex, 1);
     unit_name.splice(rowindex, 1);
+    unit_name_2.splice(rowindex, 1);
+    unit_value_2.splice(rowindex, 1);
+    unit_name_3.splice(rowindex, 1);
+    unit_value_3.splice(rowindex, 1);
     unit_operator.splice(rowindex, 1);
     unit_operation_value.splice(rowindex, 1);
-    console.log(product_cost);
+    // console.log(product_cost);
     $(this).closest("tr").remove();
     calculateTotal();
 });
@@ -405,41 +476,94 @@ $("table.order-list").on("click", ".edit-product", function() {
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
     $('#modal-header').text(row_product_name + '(' + row_product_code + ')');
 
+
     var qty = $(this).closest('tr').find('.qty').val();
+    // console.log(rowindex, qty);
     $('input[name="edit_qty"]').val(qty);
 
     $('input[name="edit_discount"]').val(parseFloat(product_discount[rowindex]).toFixed(2));
 
     unitConversion();
-    $('input[name="edit_unit_cost"]').val(row_product_cost.toFixed(2));
+    // $('input[name="edit_unit_cost"]').val(row_product_cost.toFixed(2));
 
     var tax_name_all = <?php echo json_encode($tax_name_all) ?>;
     var pos = tax_name_all.indexOf(tax_name[rowindex]);
     $('select[name="edit_tax_rate"]').val(pos);
 
+    // color_units = ['Any', 'Red', 'Blue', 'Green', 'White', 'Black' ];
+    color_units = temp_unit_name.slice(0, 6);
     temp_unit_name = (unit_name[rowindex]).split(',');
-    temp_unit_name.pop();
+    // temp_unit_name.pop();
+    temp2_unit_name = temp_unit_name;
+    width_units = temp_unit_name.slice(6, 14);
+    // length_units = temp2_unit_name.splice(0, 6);
+    // width_units = temp2_unit_name.splice(0, 6);
+    length_units = width_units;
+
     temp_unit_operator = (unit_operator[rowindex]).split(',');
-    temp_unit_operator.pop();
+    // temp_unit_operator.pop();
     temp_unit_operation_value = (unit_operation_value[rowindex]).split(',');
-    temp_unit_operation_value.pop();
+    // temp_unit_operation_value.pop();
+
+    $purchase_unit = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val();
+    $purchase_unit_2 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_2').val();
+    $purchase_unit_value_2 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_2').val();
+    $purchase_unit_3 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_3').val();
+    $purchase_unit_value_3 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_3').val();
+
+    // function checkUnit(unit) {
+    //     return unit == $purchase_unit;
+    // }
+    // document.getElementById("demo").innerHTML = color_units.find(checkUnit);
+
     $('select[name="edit_unit"]').empty();
-    $.each(temp_unit_name, function(key, value) {
-        $('select[name="edit_unit"]').append('<option value="' + key + '">' + value + '</option>');
+    $.each(color_units, function(key, value) {
+        if($purchase_unit == value){
+            $('select[name="edit_unit"]').append('<option selected value="' + key + '">' + value + '</option>');
+        }
+        else{
+            $('select[name="edit_unit"]').append('<option value="' + key + '">' + value + '</option>');
+        }
     });
+    $('input[name="edit_unit_value_2"]').val($purchase_unit_value_2);
+    $('select[name="edit_unit_2"]').empty();
+    $.each(length_units, function(key, value) {
+        if($purchase_unit_2 == value){
+            $('select[name="edit_unit_2"]').append('<option selected value="' + key + '">' + value + '</option>');
+        }
+        else{
+            $('select[name="edit_unit_2"]').append('<option value="' + key + '">' + value + '</option>');
+        }
+    });
+    $('input[name="edit_unit_value_3"]').val($purchase_unit_value_3);
+    $('select[name="edit_unit_3"]').empty();
+    $.each(width_units, function(key, value) {
+        if($purchase_unit_3 == value){
+            $('select[name="edit_unit_3"]').append('<option selected value="' + key + '">' + value + '</option>');
+        }
+        else{
+            $('select[name="edit_unit_3"]').append('<option value="' + key + '">' + value + '</option>');
+        }
+    });
+    // $('select[name="edit_unit"] option:selected').text();
+    // $('select[name="edit_unit"] option:selected').val();
     $('.selectpicker').selectpicker('refresh');
 });
 
 //Update product
 $('button[name="update_btn"]').on("click", function() {
+    // rowindex = $(this).closest('tr').index();
     var edit_discount = $('input[name="edit_discount"]').val();
     var edit_qty = $('input[name="edit_qty"]').val();
-    var edit_unit_cost = $('input[name="edit_unit_cost"]').val();
 
-    if (parseFloat(edit_discount) > parseFloat(edit_unit_cost)) {
-        alert('Invalid Discount Input!');
-        return;
-    }
+    // console.log(rowindex, edit_qty);
+
+    // var edit_unit_cost = $('input[name="edit_unit_cost"]').val();
+
+    // if (parseFloat(edit_discount) > parseFloat(edit_unit_cost)) {
+    //     alert('Invalid Discount Input!');
+    //     return;
+    // }
 
     if(edit_qty < 1) {
         $('input[name="edit_qty"]').val(1);
@@ -447,38 +571,52 @@ $('button[name="update_btn"]').on("click", function() {
         alert("Quantity can't be less than 1");
     }
 
+
     var row_unit_operator = unit_operator[rowindex].slice(0, unit_operator[rowindex].indexOf(","));
     var row_unit_operation_value = unit_operation_value[rowindex].slice(0, unit_operation_value[rowindex].indexOf(","));
     row_unit_operation_value = parseFloat(row_unit_operation_value);
     var tax_rate_all = <?php echo json_encode($tax_rate_all) ?>;
 
-
     tax_rate[rowindex] = parseFloat(tax_rate_all[$('select[name="edit_tax_rate"]').val()]);
     tax_name[rowindex] = $('select[name="edit_tax_rate"] option:selected').text();
 
-
-    if (row_unit_operator == '*') {
-        product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() / row_unit_operation_value;
-    } else {
-        product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() * row_unit_operation_value;
-    }
+    // if (row_unit_operator == '*') {
+    //     product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() / row_unit_operation_value;
+    // } else {
+    //     product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() * row_unit_operation_value;
+    // }
 
     product_discount[rowindex] = $('input[name="edit_discount"]').val();
     var position = $('select[name="edit_unit"]').val();
+    var position_2 = 6 + Number($('select[name="edit_unit_2"]').val());
+    var position_3 = 6 + Number($('select[name="edit_unit_3"]').val());
+    var unit_value_2 = $('input[name="edit_unit_value_2"]').val();
+    var unit_value_3 = $('input[name="edit_unit_value_3"]').val();
     var temp_operator = temp_unit_operator[position];
     var temp_operation_value = temp_unit_operation_value[position];
+        // console.log(temp_unit_name, position_2, position_3);
+    $prod_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-name').val();
+    $prod_name_text = $prod_name + ' ( ' + temp_unit_name[position] + ', ' + unit_value_2 + ' ' + temp_unit_name[position_2] + ' X ' + unit_value_3 + ' ' + temp_unit_name[position_3] + ' )' + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button>';
+
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.prod-name').html($prod_name_text);
+    // console.log($prod_name_text, temp_unit_name[position])
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val(temp_unit_name[position]);
-    temp_unit_name.splice(position, 1);
-    temp_unit_operator.splice(position, 1);
-    temp_unit_operation_value.splice(position, 1);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_2').val(temp_unit_name[position_2]);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_2').val(unit_value_2);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_3').val(temp_unit_name[position_3]);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_3').val(unit_value_3);
+    // temp_unit_name.splice(position, 1);
+    // temp_unit_operator.splice(position, 1);
+    // temp_unit_operation_value.splice(position, 1);
 
-    temp_unit_name.unshift($('select[name="edit_unit"] option:selected').text());
-    temp_unit_operator.unshift(temp_operator);
-    temp_unit_operation_value.unshift(temp_operation_value);
+    // temp_unit_name.unshift($('select[name="edit_unit"] option:selected').text());
+    // temp_unit_operator.unshift(temp_operator);
+    // temp_unit_operation_value.unshift(temp_operation_value);
 
-    unit_name[rowindex] = temp_unit_name.toString() + ',';
-    unit_operator[rowindex] = temp_unit_operator.toString() + ',';
-    unit_operation_value[rowindex] = temp_unit_operation_value.toString() + ',';
+    // unit_name[rowindex] = temp_unit_name.toString() + ',';
+    // unit_operator[rowindex] = temp_unit_operator.toString() + ',';
+    // unit_operation_value[rowindex] = temp_unit_operation_value.toString() + ',';
+    // console.log(edit_qty)
     checkQuantity(edit_qty, false);
 });
 
@@ -490,49 +628,59 @@ function productSearch(data) {
             data: data
         },
         success: function(data) {
+            console.log(data, (data[6]).split(','));
             var flag = 1;
-            $(".product-code").each(function(i) {
-                if ($(this).val() == data[1]) {
-                    rowindex = i;
-                    var qty = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val()) + 1;
-                    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
-                    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .recieved').val(qty);
-                    calculateRowProductData(qty);
-                    flag = 0;
-                }
-            });
+            // $(".product-code").each(function(i) {
+            //     if ($(this).val() == data[1]) {
+            //         console.log('$(this).val()', $(this).val())
+            //         rowindex = i;
+            //         var qty = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val()) + 1;
+            //         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
+            //         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .recieved').val(qty);
+            //         calculateRowProductData(qty);
+            //         flag = 0;
+            //     }
+            // });
             $("input[name='product_code_name']").val('');
             if(flag){
                 var newRow = $("<tr>");
                 var cols = '';
                 temp_unit_name = (data[6]).split(',');
-                cols += '<td>' + data[0] + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button></td>';
+                // + data[0] + ' ( ' + temp_unit_name[4] + ', ' + 1 + 'X' + 1 + ' )'
+                cols += '<td width="50%" class="prod-name" >' + data[0] + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button></td>';
                 cols += '<td>' + data[1] + '</td>';
                 cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" required/></td>';
-                if($('select[name="status"]').val() == 1)
-                    cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
-                else if($('select[name="status"]').val() == 2)
-                    cols += '<td class="recieved-product-qty"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
-                else
-                    cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="0" step="any"/></td>';
-                if(data[10]) {
-                    cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" required/></td>';
-                    cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" required/></td>';
-                }
-                else {
-                    cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" disabled/></td>';
-                    cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" disabled/></td>';
-                }
+                // cols += '<td><input type="number" class="form-control net_cost" name="net_cost[]" value="0" step="any" required/></td>';
+                // if($('select[name="status"]').val() == 1)
+                //     cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
+                // else if($('select[name="status"]').val() == 2)
+                //     cols += '<td class="recieved-product-qty"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any"/></td>';
+                // else
+                //     cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="0" step="any"/></td>';
+                // if(data[10]) {
+                    // cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" required/></td>';
+                    // cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" required/></td>';
+                // }
+                // else {
+                    // cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" disabled/></td>';
+                    // cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" disabled/></td>';
+                // }
 
-                cols += '<td class="net_unit_cost"></td>';
-                cols += '<td class="discount">0.00</td>';
-                cols += '<td class="tax"></td>';
-                cols += '<td class="sub-total"></td>';
+                // cols += '<td class="net_unit_cost"></td>';
+                // cols += '<td class="discount">0.00</td>';
+                // cols += '<td class="tax"></td>';
+                // cols += '<td class="sub-total"></td>';
                 cols += '<td><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>';
+                cols += '<input type="hidden" class="product-name" name="product_name[]" value="' + data[0] + '"/>';
                 cols += '<input type="hidden" class="product-code" name="product_code[]" value="' + data[1] + '"/>';
                 cols += '<input type="hidden" class="product-id" name="product_id[]" value="' + data[9] + '"/>';
                 cols += '<input type="hidden" class="purchase-unit" name="purchase_unit[]" value="' + temp_unit_name[0] + '"/>';
-                cols += '<input type="hidden" class="net_unit_cost" name="net_unit_cost[]" />';
+                cols += '<input type="hidden" class="net_unit_cost" name="net_unit_cost[]" value="' + 0 + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_2" name="purchase_unit_2[]" value="' + temp_unit_name[6] + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_value_2" name="purchase_unit_value_2[]" value="' + 0 + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_3" name="purchase_unit_3[]" value="' + temp_unit_name[6] + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_value_3" name="purchase_unit_value_3[]" value="' + 0 + '"/>';
+
                 cols += '<input type="hidden" class="discount-value" name="discount[]" />';
                 cols += '<input type="hidden" class="tax-rate" name="tax_rate[]" value="' + data[3] + '"/>';
                 cols += '<input type="hidden" class="tax-value" name="tax[]" />';
@@ -543,11 +691,16 @@ function productSearch(data) {
 
                 rowindex = newRow.index();
                 product_cost.splice(rowindex,0, parseFloat(data[2]));
+                product_net_cost.splice(rowindex,0, parseFloat(data[2]));
                 product_discount.splice(rowindex,0, '0.00');
                 tax_rate.splice(rowindex,0, parseFloat(data[3]));
                 tax_name.splice(rowindex,0, data[4]);
                 tax_method.splice(rowindex,0, data[5]);
                 unit_name.splice(rowindex,0, data[6]);
+                unit_name_2.splice(rowindex, 0, data[6]);
+                unit_value_2.splice(rowindex, 0, 0);
+                unit_name_3.splice(rowindex, 0, data[6]);
+                unit_value_3.splice(rowindex, 0, 0);
                 unit_operator.splice(rowindex,0, data[7]);
                 unit_operation_value.splice(rowindex,0, data[8]);
                 calculateRowProductData(1);
@@ -558,6 +711,7 @@ function productSearch(data) {
 }
 
 function checkQuantity(purchase_qty, flag) {
+    // console.log(purchase_qty);
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
     var pos = product_code.indexOf(row_product_code);
     var operator = unit_operator[rowindex].split(',');
@@ -572,7 +726,8 @@ function checkQuantity(purchase_qty, flag) {
     var status = $('select[name="status"]').val();
     if(status == '1' || status == '2' )
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.recieved').val(purchase_qty);
-    calculateRowProductData(purchase_qty);
+    // calculateRowProductData(purchase_qty);
+    calculateTotal();
 }
 
 function calculateRowProductData(quantity) {
@@ -582,12 +737,13 @@ function calculateRowProductData(quantity) {
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val(tax_rate[rowindex].toFixed(2));
 
     if (tax_method[rowindex] == 1) {
-        var net_unit_cost = row_product_cost - product_discount[rowindex];
-        var tax = net_unit_cost * quantity * (tax_rate[rowindex] / 100);
-        var sub_total = (net_unit_cost * quantity) + tax;
+        // var net_unit_cost = row_product_cost - product_discount[rowindex];
+        // var tax = net_unit_cost * quantity * (tax_rate[rowindex] / 100);
+        // var sub_total = (net_unit_cost * quantity) + tax;
+        var sub_total = 0;
 
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(2));
+        // $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(2));
+        // $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(2));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed(2));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(2));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(2));
@@ -596,10 +752,11 @@ function calculateRowProductData(quantity) {
         var sub_total_unit = row_product_cost - product_discount[rowindex];
         var net_unit_cost = (100 / (100 + tax_rate[rowindex])) * sub_total_unit;
         var tax = (sub_total_unit - net_unit_cost) * quantity;
-        var sub_total = sub_total_unit * quantity;
+        // var sub_total = sub_total_unit * quantity;
+        var sub_total = 0;
 
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(2));
+        // $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(2));
+        // $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(2));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed(2));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(2));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(2));
@@ -634,6 +791,19 @@ function calculateTotal() {
     $("#total-qty").text(total_qty);
     $('input[name="total_qty"]').val(total_qty);
 
+    //Sum of Net Cost
+    // var total_amount = 0;
+    // $(".net_cost").each(function() {
+
+    //     if ($(this).val() == '') {
+    //         total_amount += 0;
+    //     } else {
+    //         total_amount += parseFloat($(this).val());
+    //     }
+    // });
+    // $("#total-cost").text(total_amount);
+    // $('input[name="total_cost"]').val(total_amount);
+
     //Sum of discount
     var total_discount = 0;
     $(".discount").each(function() {
@@ -666,6 +836,7 @@ function calculateGrandTotal() {
     var item = $('table.order-list tbody tr:last').index();
 
     var total_qty = parseFloat($('#total-qty').text());
+    // var total_amount = parseFloat($('#total-cost').text());
     var subtotal = parseFloat($('#total').text());
     var order_tax = parseFloat($('select[name="order_tax_rate"]').val());
     var order_discount = parseFloat($('input[name="order_discount"]').val());
@@ -676,11 +847,16 @@ function calculateGrandTotal() {
     if (!shipping_cost)
         shipping_cost = 0.00;
 
-    item = ++item + '(' + total_qty + ')';
-    order_tax = (subtotal - order_discount) * (order_tax / 100);
-    var grand_total = (subtotal + order_tax + shipping_cost) - order_discount;
+    item = ++item;
+    // item = ++item + '(' + total_qty + ')';
+    // order_tax = (subtotal - order_discount) * (order_tax / 100);
+    // var grand_total = (subtotal + order_tax + shipping_cost) - order_discount;
+    order_tax = 0;
+    var grand_total = 0.00;
 
     $('#item').text(item);
+    $('#total_weight').text(total_qty);
+    // $('#total_amount').text(total_amount);
     $('input[name="item"]').val($('table.order-list tbody tr:last').index() + 1);
     $('#subtotal').text(subtotal.toFixed(2));
     $('#order_tax').text(order_tax.toFixed(2));
@@ -729,7 +905,8 @@ $('#purchase-form').on('submit',function(e){
         e.preventDefault();
     }
 
-    else if($('select[name="status"]').val() != 1)
+    // else if($('select[name="status"]').val() != 1)
+    else if($('input[name="status"]').val() != 1)
     {
         flag = 0;
         $(".qty").each(function() {
@@ -750,8 +927,11 @@ $('#purchase-form').on('submit',function(e){
     else
         $(".batch-no, .expired-date").prop('disabled', false);
 });
+
 </script>
-@endsection @section('scripts')
+@endsection
+
+@section('scripts')
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
 
 @endsection

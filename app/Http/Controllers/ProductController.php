@@ -36,8 +36,9 @@ class ProductController extends Controller
                 $all_permission[] = 'dummy text';
             return view('product.index', compact('all_permission'));
         }
-        else
+        else{
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
+        }
     }
 
     public function productData(Request $request)
@@ -252,10 +253,10 @@ class ProductController extends Controller
 
         $data['product_details'] = str_replace('"', '@', $data['product_details']);
 
-        if($data['starting_date'])
-            $data['starting_date'] = date('Y-m-d', strtotime($data['starting_date']));
-        if($data['last_date'])
-            $data['last_date'] = date('Y-m-d', strtotime($data['last_date']));
+        // if($data['starting_date'])
+        //     $data['starting_date'] = date('Y-m-d', strtotime($data['starting_date']));
+        // if($data['last_date'])
+        //     $data['last_date'] = date('Y-m-d', strtotime($data['last_date']));
         $data['is_active'] = true;
         $images = $request->image;
         $image_names = [];
@@ -282,33 +283,33 @@ class ProductController extends Controller
         //dealing with product variant
         if(!isset($data['is_batch']))
             $data['is_batch'] = null;
-        if(isset($data['is_variant'])) {
-            foreach ($data['variant_name'] as $key => $variant_name) {
-                $lims_variant_data = Variant::firstOrCreate(['name' => $data['variant_name'][$key]]);
-                $lims_variant_data->name = $data['variant_name'][$key];
-                $lims_variant_data->save();
-                $lims_product_variant_data = new ProductVariant;
-                $lims_product_variant_data->product_id = $lims_product_data->id;
-                $lims_product_variant_data->variant_id = $lims_variant_data->id;
-                $lims_product_variant_data->position = $key + 1;
-                $lims_product_variant_data->item_code = $data['item_code'][$key];
-                $lims_product_variant_data->additional_price = $data['additional_price'][$key];
-                $lims_product_variant_data->qty = 0;
-                $lims_product_variant_data->save();
-            }
-        }
-        if(isset($data['is_diffPrice'])) {
-            foreach ($data['diff_price'] as $key => $diff_price) {
-                if($diff_price) {
-                    Product_Warehouse::create([
-                        "product_id" => $lims_product_data->id,
-                        "warehouse_id" => $data["warehouse_id"][$key],
-                        "qty" => 0,
-                        "price" => $diff_price
-                    ]);
-                }
-            }
-        }
+        // if(isset($data['is_variant'])) {
+        //     foreach ($data['variant_name'] as $key => $variant_name) {
+        //         $lims_variant_data = Variant::firstOrCreate(['name' => $data['variant_name'][$key]]);
+        //         $lims_variant_data->name = $data['variant_name'][$key];
+        //         $lims_variant_data->save();
+        //         $lims_product_variant_data = new ProductVariant;
+        //         $lims_product_variant_data->product_id = $lims_product_data->id;
+        //         $lims_product_variant_data->variant_id = $lims_variant_data->id;
+        //         $lims_product_variant_data->position = $key + 1;
+        //         $lims_product_variant_data->item_code = $data['item_code'][$key];
+        //         $lims_product_variant_data->additional_price = $data['additional_price'][$key];
+        //         $lims_product_variant_data->qty = 0;
+        //         $lims_product_variant_data->save();
+        //     }
+        // }
+        // if(isset($data['is_diffPrice'])) {
+        //     foreach ($data['diff_price'] as $key => $diff_price) {
+        //         if($diff_price) {
+        //             Product_Warehouse::create([
+        //                 "product_id" => $lims_product_data->id,
+        //                 "warehouse_id" => $data["warehouse_id"][$key],
+        //                 "qty" => 0,
+        //                 "price" => $diff_price
+        //             ]);
+        //         }
+        //     }
+        // }
         \Session::flash('create_message', 'Product created successfully');
     }
 
@@ -377,10 +378,10 @@ class ProductController extends Controller
 
             $data['product_details'] = str_replace('"', '@', $data['product_details']);
             $data['product_details'] = $data['product_details'];
-            if($data['starting_date'])
-                $data['starting_date'] = date('Y-m-d', strtotime($data['starting_date']));
-            if($data['last_date'])
-                $data['last_date'] = date('Y-m-d', strtotime($data['last_date']));
+            // if($data['starting_date'])
+            //     $data['starting_date'] = date('Y-m-d', strtotime($data['starting_date']));
+            // if($data['last_date'])
+            //     $data['last_date'] = date('Y-m-d', strtotime($data['last_date']));
 
             //dealing with previous images
             if($request->prev_img) {
@@ -423,67 +424,67 @@ class ProductController extends Controller
                 }
             }
             //dealing with product variant
-            if(isset($data['is_variant'])) {
-                foreach ($data['variant_name'] as $key => $variant_name) {
-                    if($data['product_variant_id'][$key] == 0) {
-                        $lims_variant_data = Variant::firstOrCreate(['name' => $data['variant_name'][$key]]);
-                        $lims_product_variant_data = new ProductVariant();
+            // if(isset($data['is_variant'])) {
+            //     foreach ($data['variant_name'] as $key => $variant_name) {
+            //         if($data['product_variant_id'][$key] == 0) {
+            //             $lims_variant_data = Variant::firstOrCreate(['name' => $data['variant_name'][$key]]);
+            //             $lims_product_variant_data = new ProductVariant();
 
-                        $lims_product_variant_data->product_id = $lims_product_data->id;
-                        $lims_product_variant_data->variant_id = $lims_variant_data->id;
+            //             $lims_product_variant_data->product_id = $lims_product_data->id;
+            //             $lims_product_variant_data->variant_id = $lims_variant_data->id;
 
-                        $lims_product_variant_data->position = $key + 1;
-                        $lims_product_variant_data->item_code = $data['item_code'][$key];
-                        $lims_product_variant_data->additional_price = $data['additional_price'][$key];
-                        $lims_product_variant_data->qty = 0;
-                        $lims_product_variant_data->save();
-                    }
-                    else {
-                        Variant::find($data['variant_id'][$key])->update(['name' => $variant_name]);
-                        ProductVariant::find($data['product_variant_id'][$key])->update([
-                            'position' => $key+1,
-                            'item_code' => $data['item_code'][$key],
-                            'additional_price' => $data['additional_price'][$key]
-                        ]);
-                    }
-                }
-            }
-            else {
-                $data['is_variant'] = null;
-                $product_variants = ProductVariant::where('product_id', $lims_product_data->id)->get();
-                foreach ($product_variants as $key => $product_variant) {
-                    $product_variant->delete();
-                }
-            }
-            if(isset($data['is_diffPrice'])) {
-                foreach ($data['diff_price'] as $key => $diff_price) {
-                    if($diff_price) {
-                        $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($lims_product_data->id, $data['warehouse_id'][$key])->first();
-                        if($lims_product_warehouse_data) {
-                            $lims_product_warehouse_data->price = $diff_price;
-                            $lims_product_warehouse_data->save();
-                        }
-                        else {
-                            Product_Warehouse::create([
-                                "product_id" => $lims_product_data->id,
-                                "warehouse_id" => $data["warehouse_id"][$key],
-                                "qty" => 0,
-                                "price" => $diff_price
-                            ]);
-                        }
-                    }
-                }
-            }
-            else {
-                $data['is_diffPrice'] = false;
-                foreach ($data['warehouse_id'] as $key => $warehouse_id) {
-                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($lims_product_data->id, $warehouse_id)->first();
-                    if($lims_product_warehouse_data) {
-                        $lims_product_warehouse_data->price = null;
-                        $lims_product_warehouse_data->save();
-                    }
-                }
-            }
+            //             $lims_product_variant_data->position = $key + 1;
+            //             $lims_product_variant_data->item_code = $data['item_code'][$key];
+            //             $lims_product_variant_data->additional_price = $data['additional_price'][$key];
+            //             $lims_product_variant_data->qty = 0;
+            //             $lims_product_variant_data->save();
+            //         }
+            //         else {
+            //             Variant::find($data['variant_id'][$key])->update(['name' => $variant_name]);
+            //             ProductVariant::find($data['product_variant_id'][$key])->update([
+            //                 'position' => $key+1,
+            //                 'item_code' => $data['item_code'][$key],
+            //                 'additional_price' => $data['additional_price'][$key]
+            //             ]);
+            //         }
+            //     }
+            // }
+            // else {
+            //     $data['is_variant'] = null;
+            //     $product_variants = ProductVariant::where('product_id', $lims_product_data->id)->get();
+            //     foreach ($product_variants as $key => $product_variant) {
+            //         $product_variant->delete();
+            //     }
+            // }
+            // if(isset($data['is_diffPrice'])) {
+            //     foreach ($data['diff_price'] as $key => $diff_price) {
+            //         if($diff_price) {
+            //             $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($lims_product_data->id, $data['warehouse_id'][$key])->first();
+            //             if($lims_product_warehouse_data) {
+            //                 $lims_product_warehouse_data->price = $diff_price;
+            //                 $lims_product_warehouse_data->save();
+            //             }
+            //             else {
+            //                 Product_Warehouse::create([
+            //                     "product_id" => $lims_product_data->id,
+            //                     "warehouse_id" => $data["warehouse_id"][$key],
+            //                     "qty" => 0,
+            //                     "price" => $diff_price
+            //                 ]);
+            //             }
+            //         }
+            //     }
+            // }
+            // else {
+            //     $data['is_diffPrice'] = false;
+            //     foreach ($data['warehouse_id'] as $key => $warehouse_id) {
+            //         $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($lims_product_data->id, $warehouse_id)->first();
+            //         if($lims_product_warehouse_data) {
+            //             $lims_product_warehouse_data->price = null;
+            //             $lims_product_warehouse_data->save();
+            //         }
+            //     }
+            // }
             $lims_product_data->update($data);
             \Session::flash('edit_message', 'Product updated successfully');
         }
@@ -600,6 +601,7 @@ class ProductController extends Controller
                 ->where('product_variants.item_code', $product_code[0])
                 ->first();
         }
+
         $product[] = $lims_product_data->name;
         if($lims_product_data->is_variant)
             $product[] = $lims_product_data->item_code;

@@ -47,7 +47,8 @@
                                         <span class="validation-msg" id="code-error"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <input type="hidden" name="barcode_symbology" value="C128">
+                                <!-- <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{trans('file.Barcode Symbology')}} *</strong> </label>
                                         <div class="input-group">
@@ -62,8 +63,8 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div id="digital" class="col-md-4">
+                                </div> -->
+                                <!-- <div id="digital" class="col-md-4">
                                     <div class="form-group">
                                         <label>{{trans('file.Attach File')}}</strong> </label>
                                         <div class="input-group">
@@ -110,7 +111,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{trans('file.Brand')}}</strong> </label>
@@ -137,6 +138,9 @@
                                       </div>
                                     </div>
                                 </div>
+                                <input type="hidden" name="unit_id" value="1">
+                                <input type="hidden" name="sale_unit_id" value="1">
+                                <input type="hidden" name="purchase_unit_id" value="1">
                                 <!-- <div id="unit" class="col-md-12">
                                     <div class="row ">
                                         <div class="col-md-4">

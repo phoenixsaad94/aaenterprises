@@ -45,7 +45,8 @@
                                         <span class="validation-msg" id="code-error"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <input type="hidden" name="barcode_symbology" value="C128">
+                                <!-- <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{trans('file.Barcode Symbology')}} *</strong> </label>
                                         <div class="input-group">
@@ -59,8 +60,8 @@
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div id="digital" class="col-md-4">
+                                </div> -->
+                                <!-- <div id="digital" class="col-md-4">
                                     <div class="form-group">
                                         <label>{{trans('file.Attach File')}} *</strong> </label>
                                         <div class="input-group">
@@ -90,7 +91,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{trans('file.Brand')}}</strong> </label>
@@ -116,6 +117,9 @@
                                       <span class="validation-msg"></span>
                                     </div>
                                 </div>
+                                <input type="hidden" name="unit_id" value="1">
+                                <input type="hidden" name="sale_unit_id" value="1">
+                                <input type="hidden" name="purchase_unit_id" value="1">
                                 <!-- <div id="unit" class="col-md-12">
                                     <div class="row ">
                                         <div class="col-md-4 form-group">
@@ -150,27 +154,27 @@
                                         </div>
                                     </div>
                                 </div> -->
+                                <div id="alert-qty" class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{trans('file.Alert Quantity')}}</strong> </label>
+                                        <input type="number" name="alert_quantity" class="form-control" value="0" step="any">
+                                    </div>
+                                </div>
                                 <div id="cost" class="col-md-4">
                                      <div class="form-group">
-                                        <label>{{trans('file.Product Cost')}} *</strong> </label>
-                                        <input type="number" name="cost" required class="form-control" step="any">
-                                        <span class="validation-msg"></span>
+                                        <!-- <label>{{trans('file.Product Cost')}} *</strong> </label> -->
+                                        <input type="hidden" name="cost" required class="form-control" value="0" step="any">
+                                        <!-- <span class="validation-msg"></span> -->
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{trans('file.Product Price')}} *</strong> </label>
-                                        <input type="number" name="price" required class="form-control" step="any">
-                                        <span class="validation-msg"></span>
+                                        <!-- <label>{{trans('file.Product Price')}} *</strong> </label> -->
+                                        <input type="hidden" name="price" required class="form-control" value="0" step="any">
+                                        <!-- <span class="validation-msg"></span> -->
                                     </div>
                                     <div class="form-group">
-                                        <input type="hidden" name="qty" value="0.00">
-                                    </div>
-                                </div>
-                                <div id="alert-qty" class="col-md-4">
-                                    <div class="form-group">
-                                        <label>{{trans('file.Alert Quantity')}}</strong> </label>
-                                        <input type="number" name="alert_quantity" class="form-control" step="any">
+                                        <input type="hidden" name="qty" value="0">
                                     </div>
                                 </div>
                                 <!-- <div class="col-md-4">

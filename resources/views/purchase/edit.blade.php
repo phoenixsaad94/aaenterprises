@@ -48,17 +48,18 @@
                                 <div class="row">
                                 	<div class="col-md-4">
                                         <div class="form-group">
-                                            <label>{{trans('file.Purchase Status')}}</label>
+                                            <!-- <label>{{trans('file.Purchase Status')}}</label> -->
                                             <input type="hidden" name="status_hidden" value="{{$lims_purchase_data->status}}">
-                                            <select name="status" class="form-control">
-                                                <option value="1">{{trans('file.Recieved')}}</option>
+                                            <input type="hidden" name="status" value="{{$lims_purchase_data->status}}">
+                                            <!-- <select name="status" class="form-control" >
+                                                <option selected value="1">{{trans('file.Recieved')}}</option>
                                                 <option value="2">{{trans('file.Partial')}}</option>
                                                 <option value="3">{{trans('file.Pending')}}</option>
                                                 <option value="4">{{trans('file.Ordered')}}</option>
-                                            </select>
+                                            </select> -->
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-4">
                                         <div class="form-group">
                                             <label>{{trans('file.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
                                             <input type="file" name="document" class="form-control" >
@@ -68,7 +69,7 @@
                                                 </span>
                                             @endif
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-md-12 mt-3">
                                         <label>{{trans('file.Select Product')}}</label>
                                         <div class="search-box input-group">
@@ -87,22 +88,23 @@
                                                         <th>{{trans('file.name')}}</th>
                                                         <th>{{trans('file.Code')}}</th>
                                                         <!-- <th>{{trans('file.Quantity')}}</th> -->
-                                                        <th>{{trans('Weight')}}</th>
+                                                        <th>{{trans('file.Weight')}}</th>
+                                                        <th>{{trans('file.Net Cost')}}</th>
                                                         <th class="recieved-product-qty d-none">{{trans('file.Recieved')}}</th>
-                                                        <th>{{trans('file.Batch No')}}</th>
-                                                        {{-- <th>{{trans('file.Expired Date')}}</th>
+                                                        {{-- <th>{{trans('file.Batch No')}}</th>
+                                                        <th>{{trans('file.Expired Date')}}</th>
                                                         <th>{{trans('file.Net Unit Cost')}}</th>
                                                         <th>{{trans('file.Discount')}}</th>
-                                                        <th>{{trans('file.Tax')}}</th> --}}
-                                                        <th>{{trans('file.Subtotal')}}</th>
+                                                        <th>{{trans('file.Tax')}}</th>
+                                                        <th>{{trans('file.Subtotal')}}</th> --}}
                                                         <th><i class="dripicons-trash"></i></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    $temp_unit_name = [];
-                                                    $temp_unit_operator = [];
-                                                    $temp_unit_operation_value = [];
+                                                        $temp_unit_name = [];
+                                                        $temp_unit_operator = [];
+                                                        $temp_unit_operation_value = [];
                                                     ?>
                                                     @foreach($lims_product_purchase_data as $product_purchase)
                                                     <tr>
@@ -115,23 +117,29 @@
 
                                                         $tax = DB::table('taxes')->where('rate', $product_purchase->tax_rate)->first();
 
-                                                        $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
+                                                        // $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
+                                                        $purchase_unit_data = DB::table('units')->where('id', $product_purchase->purchase_unit_id)->first();
+                                                        $purchase_unit_data_2 = DB::table('units')->where('id', $product_purchase->purchase_unit_id_2)->first();
+                                                        $purchase_unit_data_3 = DB::table('units')->where('id', $product_purchase->purchase_unit_id_3)->first();
+                                                        // dd($product_purchase);
+
+                                                        $units = DB::table('units')->get();
 
                                                         $unit_name = array();
                                                         $unit_operator = array();
                                                         $unit_operation_value = array();
 
                                                         foreach($units as $unit) {
-                                                            if($product_purchase->purchase_unit_id == $unit->id) {
-                                                                array_unshift($unit_name, $unit->unit_name);
-                                                                array_unshift($unit_operator, $unit->operator);
-                                                                array_unshift($unit_operation_value, $unit->operation_value);
-                                                            }
-                                                            else {
+                                                            // if($product_purchase->purchase_unit_id == $unit->id) {
+                                                            //     array_unshift($unit_name, $unit->unit_name);
+                                                            //     array_unshift($unit_operator, $unit->operator);
+                                                            //     array_unshift($unit_operation_value, $unit->operation_value);
+                                                            // }
+                                                            // else {
                                                                 $unit_name[]  = $unit->unit_name;
                                                                 $unit_operator[] = $unit->operator;
                                                                 $unit_operation_value[] = $unit->operation_value;
-                                                            }
+                                                            // }
                                                         }
                                                         if($product_data->tax_method == 1){
                                                             $product_cost = ($product_purchase->net_unit_cost + ($product_purchase->discount / $product_purchase->qty)) / $unit_operation_value[0];
@@ -149,36 +157,44 @@
 
                                                         $product_batch_data = \App\ProductBatch::select('batch_no', 'expired_date')->find($product_purchase->product_batch_id);
                                                     ?>
-                                                        <td>{{$product_data->name}} <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button> </td>
+                                                        <td width="50%" class="prod-name">{{"$product_data->name".' ( '."$purchase_unit_data->unit_name".', '."$product_purchase->purchase_unit_value_2".' '."$purchase_unit_data_2->unit_name".' X '."$product_purchase->purchase_unit_value_3".' '."$purchase_unit_data_3->unit_name".' )' }} <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button> </td>
                                                         <td>{{$product_data->code}}</td>
                                                         <td><input type="number" class="form-control qty" name="qty[]" value="{{$product_purchase->qty}}" step="any" required /></td>
                                                         <td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="{{$product_purchase->recieved}}" step="any"/></td>
+                                                        <td><input type="number" class="form-control net_cost" name="net_cost[]" value="{{$product_purchase->total}}" step="any" required /></td>
                                                         @if($product_purchase->product_batch_id)
-                                                        <td>
+                                                        <!-- <td>
                                                             <input type="hidden" name="product_batch_id[]" value="{{$product_purchase->product_batch_id}}">
                                                             <input type="text" class="form-control batch-no" name="batch_no[]" value="{{$product_batch_data->batch_no}}" required/>
                                                         </td>
-                                                        <!-- <td>
+                                                        <td>
                                                             <input type="text" class="form-control expired-date" name="expired_date[]" value="{{$product_batch_data->expired_date}}" required/>
                                                         </td> -->
                                                         @else
-                                                        <td>
+                                                        <!-- <td>
                                                             <input type="hidden" name="product_batch_id[]">
                                                             <input type="text" class="form-control batch-no" name="batch_no[]" disabled />
                                                         </td>
-                                                        <!-- <td>
+                                                        <td>
                                                             <input type="text" class="form-control expired-date" name="expired_date[]" disabled />
                                                         </td> -->
                                                         @endif
                                                         <!-- <td class="net_unit_cost">{{ number_format((float)$product_purchase->net_unit_cost, 2, '.', '') }} </td>
                                                         <td class="discount">{{ number_format((float)$product_purchase->discount, 2, '.', '') }}</td>
-                                                        <td class="tax">{{ number_format((float)$product_purchase->tax, 2, '.', '') }}</td> -->
-                                                        <td class="sub-total">{{ number_format((float)$product_purchase->total, 2, '.', '') }}</td>
+                                                        <td class="tax">{{ number_format((float)$product_purchase->tax, 2, '.', '') }}</td>
+                                                        <td class="sub-total">{{ number_format((float)$product_purchase->total, 2, '.', '') }}</td> -->
                                                         <td><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>
                                                         <input type="hidden" class="product-id" name="product_id[]" value="{{$product_data->id}}"/>
+                                                        <input type="hidden" class="product-name" name="product_name[]" value="{{$product_data->name}}"/>
                                                         <input type="hidden" class="product-code" name="product_code[]" value="{{$product_data->code}}"/>
                                                         <input type="hidden" class="product-cost" name="product_cost[]" value="{{ $product_cost}}"/>
-                                                        <input type="hidden" class="purchase-unit" name="purchase_unit[]" value="{{$unit_name}}"/>
+                                                        <!-- <input type="hidden" class="purchase-unit" name="purchase_unit[]" value="{{$unit_name}}"/> -->
+                                                        <input type="hidden" class="purchase-unit-all" name="purchase_unit_all[]" value="{{$unit_name}}"/>
+                                                        <input type="hidden" class="purchase-unit" name="purchase_unit[]" value="{{$purchase_unit_data->unit_name}}"/>
+                                                        <input type="hidden" class="purchase-unit_2" name="purchase_unit_2[]" value="{{$purchase_unit_data_2->unit_name}}"/>
+                                                        <input type="hidden" class="purchase-unit_value_2" name="purchase_unit_value_2[]" value="{{$product_purchase->purchase_unit_value_2}}"/>
+                                                        <input type="hidden" class="purchase-unit_3" name="purchase_unit_3[]" value="{{$purchase_unit_data_3->unit_name}}"/>
+                                                        <input type="hidden" class="purchase-unit_value_3" name="purchase_unit_value_3[]" value="{{$product_purchase->purchase_unit_value_3}}"/>
                                                         <input type="hidden" class="purchase-unit-operator" value="{{$unit_operator}}"/>
                                                         <input type="hidden" class="purchase-unit-operation-value" value="{{$unit_operation_value}}"/>
                                                         <input type="hidden" class="net_unit_cost" name="net_unit_cost[]" value="{{$product_purchase->net_unit_cost}}" />
@@ -198,13 +214,14 @@
                                                 <tfoot class="tfoot active">
                                                     <th colspan="2">{{trans('file.Total')}}</th>
                                                     <th id="total-qty">{{$lims_purchase_data->total_qty}}</th>
-                                                    <th></th>
+                                                    <th id="total-cost">{{ number_format((float)$lims_purchase_data->total_cost, 2, '.', '') }}</th>
                                                     {{-- <th></th>
+                                                    <th></th>
                                                     <th></th>
                                                     <th class="recieved-product-qty d-none"></th>
                                                     <th id="total-discount">{{ number_format((float)$lims_purchase_data->total_discount, 2, '.', '') }}</th>
-                                                    <th id="total-tax">{{ number_format((float)$lims_purchase_data->total_tax, 2, '.', '')}}</th> --}}
-                                                    <th id="total">{{ number_format((float)$lims_purchase_data->total_cost, 2, '.', '') }}</th>
+                                                    <th id="total-tax">{{ number_format((float)$lims_purchase_data->total_tax, 2, '.', '')}}</th>
+                                                    <th id="total">{{ number_format((float)$lims_purchase_data->total_cost, 2, '.', '') }}</th> --}}
                                                     <th><i class="dripicons-trash"></i></th>
                                                 </tfoot>
                                             </table>
@@ -235,6 +252,7 @@
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <input type="hidden" name="item" value="{{$lims_purchase_data->item}}" />
+                                            <input type="hidden" name="ttl_weight" value="{{$lims_purchase_data->total_qty}}" />
                                             <input type="hidden" name="order_tax" value="{{$lims_purchase_data->order_tax}}"/>
                                         </div>
                                     </div>
@@ -299,10 +317,16 @@
             <td><strong>{{trans('file.Items')}}</strong>
                 <span class="pull-right" id="item">0.00</span>
             </td>
-            <td><strong>{{trans('file.Total')}}</strong>
+            <td><strong>{{trans('file.Total Weight')}}</strong>
+                <span class="pull-right" id="total_weight">0</span>
+            </td>
+            <td><strong>{{trans('file.Total Cost')}}</strong>
+                <span class="pull-right" id="total_amount">0</span>
+            </td>
+            <!-- <td><strong>{{trans('file.Total')}}</strong>
                 <span class="pull-right" id="subtotal">0.00</span>
             </td>
-            <!-- <td><strong>{{trans('file.Order Tax')}}</strong>
+            <td><strong>{{trans('file.Order Tax')}}</strong>
                 <span class="pull-right" id="order_tax">0.00</span>
             </td>
             <td><strong>{{trans('file.Order Discount')}}</strong>
@@ -310,53 +334,91 @@
             </td>
             <td><strong>{{trans('file.Shipping Cost')}}</strong>
                 <span class="pull-right" id="shipping_cost">0.00</span>
-            </td> -->
+            </td>
             <td><strong>{{trans('file.grand total')}}</strong>
                 <span class="pull-right" id="grand_total">0.00</span>
-            </td>
+            </td> -->
         </table>
     </div>
     <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
         <div role="document" class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 id="modal_header" class="modal-title"></h5>
+                    <h5 id="modal-header" class="modal-title"></h5>
                     <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div class="form-group">
+                        <input type="hidden" name="edit_qty" class="form-control" step="any">
+                        <!-- <div class="form-group">
                             <label>{{trans('file.Quantity')}}</label>
-                            <input type="number" name="edit_qty" class="form-control" step="any">
-                        </div>
-                        <div class="form-group">
+                        </div> -->
+                        <!-- <div class="form-group">
                             <label>{{trans('file.Unit Discount')}}</label>
                             <input type="number" name="edit_discount" class="form-control" step="any">
-                        </div>
-                        <div class="form-group">
+                        </div> -->
+                        <!-- <div class="form-group">
                             <label>{{trans('file.Unit Cost')}}</label>
                             <input type="number" name="edit_unit_cost" class="form-control" step="any">
-                        </div>
+                        </div> -->
                         <?php
-                            $tax_name_all[] = 'No Tax';
-                            $tax_rate_all[] = 0;
-                            foreach($lims_tax_list as $tax) {
-                                $tax_name_all[] = $tax->name;
-                                $tax_rate_all[] = $tax->rate;
-                            }
-                        ?>
-                            <div class="form-group">
+                $tax_name_all[] = 'No Tax';
+                $tax_rate_all[] = 0;
+                foreach($lims_tax_list as $tax) {
+                    $tax_name_all[] = $tax->name;
+                    $tax_rate_all[] = $tax->rate;
+                }
+            ?>
+                            <!-- <div class="form-group">
                                 <label>{{trans('file.Tax Rate')}}</label>
                                 <select name="edit_tax_rate" class="form-control selectpicker">
                                     @foreach($tax_name_all as $key => $name)
                                     <option value="{{$key}}">{{$name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="form-group">
-                                <label>{{trans('file.Product Unit')}}</label>
+                                <!-- <label>{{trans('file.Product Unit')}}</label> -->
+                                <label>{{'Color'}}</label>
                                 <select name="edit_unit" class="form-control selectpicker">
+                                    <option value="1">Any</option>
+                                    <option value="2">Red</option>
+                                    <option value="3">Blue</option>
+                                    <option value="4">Green</option>
+                                    <option value="5">White</option>
+                                    <option value="6">Black</option>
                                 </select>
+                            </div>
+
+                            <div  class="row">
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Length Number'}}</label>
+                                        <input type="number" name="edit_unit_value_2" class="form-control" value="" />
+                                    </div>
+                                </div>
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Length Unit'}}</label>
+                                        <select name="edit_unit_2" class="form-control selectpicker">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div  class="row">
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Width Number'}}</label>
+                                        <input type="number" name="edit_unit_value_3" class="form-control" value="" />
+                                    </div>
+                                </div>
+                                <div  class="col-6">
+                                    <div class="form-group">
+                                        <label>{{'Width Unit'}}</label>
+                                        <select name="edit_unit_3" class="form-control selectpicker">
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <button type="button" name="update_btn" class="btn btn-primary">{{trans('file.update')}}</button>
                     </form>
@@ -379,11 +441,17 @@ var product_qty = [];
 
 // array data with selection
 var product_cost = [];
+var product_net_cost = [];
 var product_discount = [];
 var tax_rate = [];
 var tax_name = [];
 var tax_method = [];
+
 var unit_name = [];
+var unit_name_2 = [];
+var unit_value_2 = [];
+var unit_name_3 = [];
+var unit_value_3 = [];
 var unit_operator = [];
 var unit_operation_value = [];
 
@@ -403,15 +471,20 @@ for(rowindex  =0; rowindex <= rownumber; rowindex++){
     product_cost.push(parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-cost').val()));
     var total_discount = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.discount').text());
     var quantity = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val());
+    product_net_cost.push(parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_cost').val()));
     product_discount.push((total_discount / quantity).toFixed(2));
     tax_rate.push(parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val()));
     tax_name.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-name').val());
     tax_method.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-method').val());
-    temp_unit_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val().split(',');
+    temp_unit_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit-all').val().split(',');
     unit_name.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val());
+    unit_name_2.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_2').val());
+    unit_value_2.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_2').val());
+    unit_name_3.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_3').val());
+    unit_value_3.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_3').val());
     unit_operator.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit-operator').val());
     unit_operation_value.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit-operation-value').val());
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val(temp_unit_name[0]);
+    // $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val(temp_unit_name[0]);
 }
 
 $('.selectpicker').selectpicker({
@@ -428,7 +501,11 @@ $('select[name="order_tax_rate"]').val($('input[name="order_tax_rate_hidden"]').
 $('select[name="purchase_status"]').val($('input[name="purchase_status_hidden"]').val());
 $('.selectpicker').selectpicker('refresh');
 
-$('#item').text($('input[name="item"]').val() + '(' + $('input[name="total_qty"]').val() + ')');
+$('#item').text($('input[name="item"]').val()
+//  + '(' + $('input[name="total_qty"]').val() + ')'
+);
+$('#total_weight').text($('input[name="ttl_weight"]').val());
+$('#total_amount').text($('input[name="total_cost"]').val());
 $('#subtotal').text(parseFloat($('input[name="total_cost"]').val()).toFixed(2));
 $('#order_tax').text(parseFloat($('input[name="order_tax"]').val()).toFixed(2));
 if($('select[name="status"]').val() == 2){
@@ -525,16 +602,30 @@ $("#myTable").on('input', '.qty', function() {
     checkQuantity($(this).val(), true);
 });
 
+//Change net cost
+$("#myTable").on('input', '.net_cost', function() {
+    rowindex = $(this).closest('tr').index();
+    if($(this).val() < 0 && $(this).val() != '') {
+      $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .net_cost').val(1);
+      alert("Net Product Cost can't be less than 0");
+    }
+    calculateTotal();
+});
 
 //Delete product
 $("table.order-list tbody").on("click", ".ibtnDel", function(event) {
     rowindex = $(this).closest('tr').index();
     product_cost.splice(rowindex, 1);
+    product_net_cost.splice(rowindex, 1);
     product_discount.splice(rowindex, 1);
     tax_rate.splice(rowindex, 1);
     tax_name.splice(rowindex, 1);
     tax_method.splice(rowindex, 1);
     unit_name.splice(rowindex, 1);
+    unit_name_2.splice(rowindex, 1);
+    unit_value_2.splice(rowindex, 1);
+    unit_name_3.splice(rowindex, 1);
+    unit_value_3.splice(rowindex, 1);
     unit_operator.splice(rowindex, 1);
     unit_operation_value.splice(rowindex, 1);
     $(this).closest("tr").remove();
@@ -554,22 +645,67 @@ $("table.order-list").on("click", ".edit-product", function() {
     $('input[name="edit_discount"]').val(parseFloat(product_discount[rowindex]).toFixed(2));
 
     unitConversion();
-    $('input[name="edit_unit_cost"]').val(row_product_cost.toFixed(2));
+    // $('input[name="edit_unit_cost"]').val(row_product_cost.toFixed(2));
 
     var tax_name_all = <?php echo json_encode($tax_name_all) ?>;
     var pos = tax_name_all.indexOf(tax_name[rowindex]);
     $('select[name="edit_tax_rate"]').val(pos);
 
-    temp_unit_name = (unit_name[rowindex]).split(',');
-    temp_unit_name.pop();
+    // color_units = ['Any', 'Red', 'Blue', 'Green', 'White', 'Black' ];
+    color_units = temp_unit_name.slice(0, 6);
+    // temp_unit_name = (unit_name[rowindex]).split(',');
+    // temp_unit_name.pop();
+    temp2_unit_name = temp_unit_name;
+    width_units = temp_unit_name.slice(6, 14);
+    // console.log(width_units);
+    // length_units = temp2_unit_name.splice(0, 6);
+    // width_units = temp2_unit_name.splice(0, 6);
+    length_units = width_units;
+
     temp_unit_operator = (unit_operator[rowindex]).split(',');
     temp_unit_operator.pop();
     temp_unit_operation_value = (unit_operation_value[rowindex]).split(',');
     temp_unit_operation_value.pop();
+
+    $purchase_unit = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val();
+    $purchase_unit_2 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_2').val();
+    $purchase_unit_value_2 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_2').val();
+    $purchase_unit_3 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_3').val();
+    $purchase_unit_value_3 = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_3').val();
+
+    // console.log($purchase_unit, $purchase_unit_2, $purchase_unit_3);
+
     $('select[name="edit_unit"]').empty();
-    $.each(temp_unit_name, function(key, value) {
-        $('select[name="edit_unit"]').append('<option value="' + key + '">' + value + '</option>');
+    $.each(color_units, function(key, value) {
+        if($purchase_unit == value){
+            $('select[name="edit_unit"]').append('<option selected value="' + key + '">' + value + '</option>');
+        }
+        else{
+            $('select[name="edit_unit"]').append('<option value="' + key + '">' + value + '</option>');
+        }
     });
+    $('input[name="edit_unit_value_2"]').val($purchase_unit_value_2);
+    $('select[name="edit_unit_2"]').empty();
+    $.each(length_units, function(key, value) {
+        if($purchase_unit_2 == value){
+            $('select[name="edit_unit_2"]').append('<option selected value="' + key + '">' + value + '</option>');
+        }
+        else{
+            $('select[name="edit_unit_2"]').append('<option value="' + key + '">' + value + '</option>');
+        }
+    });
+    $('input[name="edit_unit_value_3"]').val($purchase_unit_value_3);
+    $('select[name="edit_unit_3"]').empty();
+    $.each(width_units, function(key, value) {
+        if($purchase_unit_3 == value){
+            $('select[name="edit_unit_3"]').append('<option selected value="' + key + '">' + value + '</option>');
+        }
+        else{
+            $('select[name="edit_unit_3"]').append('<option value="' + key + '">' + value + '</option>');
+        }
+    });
+    // $('select[name="edit_unit"] option:selected').text();
+    // $('select[name="edit_unit"] option:selected').val();
     $('.selectpicker').selectpicker('refresh');
 });
 
@@ -577,12 +713,12 @@ $("table.order-list").on("click", ".edit-product", function() {
 $('button[name="update_btn"]').on("click", function() {
     var edit_discount = $('input[name="edit_discount"]').val();
     var edit_qty = $('input[name="edit_qty"]').val();
-    var edit_unit_cost = $('input[name="edit_unit_cost"]').val();
+    // var edit_unit_cost = $('input[name="edit_unit_cost"]').val();
 
-    if (parseFloat(edit_discount) > parseFloat(edit_unit_cost)) {
-        alert('Invalid Discount Input!');
-        return;
-    }
+    // if (parseFloat(edit_discount) > parseFloat(edit_unit_cost)) {
+    //     alert('Invalid Discount Input!');
+    //     return;
+    // }
 
     if(edit_qty < 1) {
         $('input[name="edit_qty"]').val(1);
@@ -600,28 +736,43 @@ $('button[name="update_btn"]').on("click", function() {
     tax_name[rowindex] = $('select[name="edit_tax_rate"] option:selected').text();
 
 
-    if (row_unit_operator == '*') {
-        product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() / row_unit_operation_value;
-    } else {
-        product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() * row_unit_operation_value;
-    }
+    // if (row_unit_operator == '*') {
+    //     product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() / row_unit_operation_value;
+    // } else {
+    //     product_cost[rowindex] = $('input[name="edit_unit_cost"]').val() * row_unit_operation_value;
+    // }
 
     product_discount[rowindex] = $('input[name="edit_discount"]').val();
     var position = $('select[name="edit_unit"]').val();
+    var position_2 = 6 + Number($('select[name="edit_unit_2"]').val());
+    var position_3 = 6 + Number($('select[name="edit_unit_3"]').val());
+    var unit_value_2 = $('input[name="edit_unit_value_2"]').val();
+    var unit_value_3 = $('input[name="edit_unit_value_3"]').val();
     var temp_operator = temp_unit_operator[position];
     var temp_operation_value = temp_unit_operation_value[position];
+    // console.log(temp_unit_name, position, position_2, position_3);
+
+    $prod_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-name').val();
+    $prod_name_text = $prod_name + ' ( ' + temp_unit_name[position] + ', ' + unit_value_2 + ' ' + temp_unit_name[position_2] + ' X ' + unit_value_3 + ' ' + temp_unit_name[position_3] + ' )' + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button>';
+
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.prod-name').html($prod_name_text);
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val(temp_unit_name[position]);
-    temp_unit_name.splice(position, 1);
-    temp_unit_operator.splice(position, 1);
-    temp_unit_operation_value.splice(position, 1);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_2').val(temp_unit_name[position_2]);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_2').val(unit_value_2);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_3').val(temp_unit_name[position_3]);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit_value_3').val(unit_value_3);
 
-    temp_unit_name.unshift($('select[name="edit_unit"] option:selected').text());
-    temp_unit_operator.unshift(temp_operator);
-    temp_unit_operation_value.unshift(temp_operation_value);
+    // temp_unit_name.splice(position, 1);
+    // temp_unit_operator.splice(position, 1);
+    // temp_unit_operation_value.splice(position, 1);
 
-    unit_name[rowindex] = temp_unit_name.toString() + ',';
-    unit_operator[rowindex] = temp_unit_operator.toString() + ',';
-    unit_operation_value[rowindex] = temp_unit_operation_value.toString() + ',';
+    // temp_unit_name.unshift($('select[name="edit_unit"] option:selected').text());
+    // temp_unit_operator.unshift(temp_operator);
+    // temp_unit_operation_value.unshift(temp_operation_value);
+
+    // unit_name[rowindex] = temp_unit_name.toString() + ',';
+    // unit_operator[rowindex] = temp_unit_operator.toString() + ',';
+    // unit_operation_value[rowindex] = temp_unit_operation_value.toString() + ',';
     checkQuantity(edit_qty, false);
 });
 
@@ -634,24 +785,25 @@ function productSearch(data) {
         },
         success: function(data) {
             var flag = 1;
-            $(".product-code").each(function(i) {
-                if ($(this).val() == data[1]) {
-                    rowindex = i;
-                    var qty = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val()) + 1;
-                    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
-                    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .recieved').val(qty);
-                    calculateRowProductData(qty);
-                    flag = 0;
-                }
-            });
+            // $(".product-code").each(function(i) {
+            //     if ($(this).val() == data[1]) {
+            //         rowindex = i;
+            //         var qty = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val()) + 1;
+            //         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
+            //         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .recieved').val(qty);
+            //         calculateRowProductData(qty);
+            //         flag = 0;
+            //     }
+            // });
             $("input[name='product_code_name']").val('');
             if(flag){
                 var newRow = $("<tr>");
                 var cols = '';
                 temp_unit_name = (data[6]).split(',');
-                cols += '<td>' + data[0] + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button></td>';
+                cols += '<td width="50%" class="prod-name" >' + data[0] + '<button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button></td>';
                 cols += '<td>' + data[1] + '</td>';
                 cols += '<td><input type="number" class="form-control qty" name="qty[]" value="1" step="any" required /></td>';
+                cols += '<td><input type="number" class="form-control net_cost" name="net_cost[]" value="0" step="any" required/></td>';
                 if($('select[name="status"]').val() == 1)
                     cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="1" step="any" /></td>';
                 else if($('select[name="status"]').val() == 2)
@@ -659,22 +811,27 @@ function productSearch(data) {
                 else
                     cols += '<td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="0" step="any"/></td>';
                 if(data[10]) {
-                    cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" required/></td>';
-                    cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" required/></td>';
+                    // cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" required/></td>';
+                    // cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" required/></td>';
                 }
                 else {
-                    cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" disabled/></td>';
-                    cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" disabled/></td>';
+                    // cols += '<td><input type="text" class="form-control batch-no" name="batch_no[]" disabled/></td>';
+                    // cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" disabled/></td>';
                 }
-                cols += '<td class="net_unit_cost"></td>';
-                cols += '<td class="discount">0.00</td>';
-                cols += '<td class="tax"></td>';
-                cols += '<td class="sub-total"></td>';
+                // cols += '<td class="net_unit_cost"></td>';
+                // cols += '<td class="discount">0.00</td>';
+                // cols += '<td class="tax"></td>';
+                // cols += '<td class="sub-total"></td>';
                 cols += '<td><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>';
+                cols += '<input type="hidden" class="product-name" name="product_name[]" value="' + data[0] + '"/>';
                 cols += '<input type="hidden" class="product-code" name="product_code[]" value="' + data[1] + '"/>';
                 cols += '<input type="hidden" class="product-id" name="product_id[]" value="' + data[9] + '"/>';
                 cols += '<input type="hidden" class="purchase-unit" name="purchase_unit[]" value="' + temp_unit_name[0] + '"/>';
-                cols += '<input type="hidden" class="net_unit_cost" name="net_unit_cost[]" />';
+                cols += '<input type="hidden" class="net_unit_cost" name="net_unit_cost[]" value="' + 0 + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_2" name="purchase_unit_2[]" value="' + temp_unit_name[6] + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_value_2" name="purchase_unit_value_2[]" value="' + 0 + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_3" name="purchase_unit_3[]" value="' + temp_unit_name[6] + '"/>';
+                cols += '<input type="hidden" class="purchase-unit_value_3" name="purchase_unit_value_3[]" value="' + 0 + '"/>';
                 cols += '<input type="hidden" class="discount-value" name="discount[]" />';
                 cols += '<input type="hidden" class="tax-rate" name="tax_rate[]" value="' + data[3] + '"/>';
                 cols += '<input type="hidden" class="tax-value" name="tax[]" />';
@@ -685,11 +842,16 @@ function productSearch(data) {
 
                 rowindex = newRow.index();
                 product_cost.splice(rowindex, 0, parseFloat(data[2]));
+                product_net_cost.splice(rowindex, 0, parseFloat(data[2]));
                 product_discount.splice(rowindex, 0, '0.00');
                 tax_rate.splice(rowindex, 0, parseFloat(data[3]));
                 tax_name.splice(rowindex, 0, data[4]);
                 tax_method.splice(rowindex, 0, data[5]);
                 unit_name.splice(rowindex, 0, data[6]);
+                unit_name_2.splice(rowindex, 0, data[6]);
+                unit_value_2.splice(rowindex, 0, 0);
+                unit_name_3.splice(rowindex, 0, data[6]);
+                unit_value_3.splice(rowindex, 0, 0);
                 unit_operator.splice(rowindex, 0, data[7]);
                 unit_operation_value.splice(rowindex, 0, data[8]);
                 calculateRowProductData(1);
@@ -713,7 +875,8 @@ function checkQuantity(purchase_qty, flag) {
     if(status == '1' || status == '2' )
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.recieved').val(purchase_qty);
 
-    calculateRowProductData(purchase_qty);
+    // calculateRowProductData(purchase_qty);
+    calculateTotal();
 }
 
 function calculateRowProductData(quantity) {
@@ -775,6 +938,19 @@ function calculateTotal() {
     $("#total-qty").text(total_qty);
     $('input[name="total_qty"]').val(total_qty);
 
+    //Sum of Net Cost
+    var total_amount = 0;
+    $(".net_cost").each(function() {
+
+        if ($(this).val() == '') {
+            total_amount += 0;
+        } else {
+            total_amount += parseFloat($(this).val());
+        }
+    });
+    $("#total-cost").text(total_amount);
+    $('input[name="total_cost"]').val(total_amount);
+
     //Sum of discount
     var total_discount = 0;
     $(".discount").each(function() {
@@ -793,22 +969,26 @@ function calculateTotal() {
 
     //Sum of subtotal
     var total = 0;
-    $(".sub-total").each(function() {
-        total += parseFloat($(this).text());
-    });
-    $("#total").text(total.toFixed(2));
-    $('input[name="total_cost"]').val(total.toFixed(2));
+    // $(".sub-total").each(function() {
+    //     total += parseFloat($(this).text());
+    // });
+    // $("#total").text(total.toFixed(2));
+    // $('input[name="total_cost"]').val(total.toFixed(2));
 
     calculateGrandTotal();
 }
 
 function calculateGrandTotal() {
 
-    var item = $('table.order-list tbody tr:last').index();
+    var item = $('table.order-list tbody tr:last').index() + 1;
 
     var total_qty = parseFloat($('#total-qty').text());
-    var subtotal = parseFloat($('#total').text());
-    var order_tax = parseFloat($('select[name="order_tax_rate"]').val());
+    var total_amount = parseFloat($('#total-cost').text());
+    // var subtotal = parseFloat($('#total').text());
+    var subtotal = parseFloat($('#total-cost').text());
+    // var subtotal = parseFloat('0.00');
+    // var order_tax = parseFloat($('select[name="order_tax_rate"]').val());
+    // var order_tax = parseFloat('0');
     var order_discount = parseFloat($('input[name="order_discount"]').val());
     var shipping_cost = parseFloat($('input[name="shipping_cost"]').val());
 
@@ -817,11 +997,15 @@ function calculateGrandTotal() {
     if (!shipping_cost)
         shipping_cost = 0.00;
 
-    item = ++item + '(' + total_qty + ')';
-    order_tax = (subtotal - order_discount) * (order_tax / 100);
-    var grand_total = (subtotal + order_tax + shipping_cost) - order_discount;
+    // item = ++item + '(' + total_qty + ')';
+    // order_tax = (subtotal - order_discount) * (order_tax / 100);
+    // var grand_total = (subtotal + order_tax + shipping_cost) - order_discount;
+    var order_tax = 0;
+    var grand_total = subtotal;
 
     $('#item').text(item);
+    $('#total_weight').text(total_qty);
+    $('#total_amount').text(total_amount);
     $('input[name="item"]').val($('table.order-list tbody tr:last').index() + 1);
     $('#subtotal').text(subtotal.toFixed(2));
     $('#order_tax').text(order_tax.toFixed(2));
@@ -870,7 +1054,8 @@ $('#purchase-form').on('submit',function(e){
         e.preventDefault();
     }
 
-    else if($('select[name="status"]').val() != 1)
+    // else if($('select[name="status"]').val() != 1)
+    else if($('input[name="status"]').val() != 1)
     {
         flag = 0;
         $(".qty").each(function() {

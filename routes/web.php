@@ -69,7 +69,7 @@ Route::group(['middleware' => ['auth', 'active']], function() {
 	Route::post('importproduct', 'ProductController@importProduct')->name('product.import');
 	Route::post('exportproduct', 'ProductController@exportProduct')->name('product.export');
 	Route::get('products/print_barcode','ProductController@printBarcode')->name('product.printBarcode');
-	
+
 	Route::get('products/lims_product_search', 'ProductController@limsProductSearch')->name('product.search');
 	Route::post('products/deletebyselection', 'ProductController@deleteBySelection');
 	Route::post('products/update', 'ProductController@updateProduct');
@@ -152,6 +152,61 @@ Route::group(['middleware' => ['auth', 'active']], function() {
 	Route::post('importpurchase', 'PurchaseController@importPurchase')->name('purchase.import');
 	Route::post('purchases/deletebyselection', 'PurchaseController@deleteBySelection');
 	Route::resource('purchases', 'PurchaseController');
+	Route::any('purchases/add_price/{id}', 'PurchaseController@addPrice')->name('purchases.add_price');
+	Route::any('purchases/add_to_sort/{id}', 'PurchaseController@addToSort')->name('purchases.sort');
+
+    Route::post('sortings/sorting-data', 'SortingController@sortingData')->name('sortings.data');
+	Route::get('sortings/product_sorting/{id}','SortingController@productSortingData');
+	Route::get('sortings/lims_product_search', 'SortingController@limsProductSearch')->name('product_sorting.search');
+	Route::post('sortings/add_payment', 'SortingController@addPayment')->name('sorting.add-payment');
+	Route::get('sortings/getpayment/{id}', 'SortingController@getPayment')->name('sorting.get-payment');
+	Route::post('sortings/updatepayment', 'SortingController@updatePayment')->name('sorting.update-payment');
+	Route::post('sortings/deletepayment', 'SortingController@deletePayment')->name('sorting.delete-payment');
+	Route::get('sortings/sorting_by_csv', 'SortingController@sortingByCsv');
+	Route::post('importsorting', 'SortingController@importSorting')->name('sorting.import');
+	Route::post('sortings/deletebyselection', 'SortingController@deleteBySelection');
+	Route::resource('sortings', 'SortingController');
+	Route::any('sortings/add_price/{id}', 'SortingController@addPrice')->name('sortings.add_price');
+    Route::any('sortings/add_to_care/{id}', 'SortingController@addToCare')->name('sortings.care');
+
+    Route::post('carings/caring-data', 'CaringController@caringData')->name('carings.data');
+	Route::get('carings/product_caring/{id}','CaringController@productCaringData');
+	Route::get('carings/lims_product_search', 'CaringController@limsProductSearch')->name('product_caring.search');
+	Route::post('carings/add_payment', 'CaringController@addPayment')->name('caring.add-payment');
+	Route::get('carings/getpayment/{id}', 'CaringController@getPayment')->name('caring.get-payment');
+	Route::post('carings/updatepayment', 'CaringController@updatePayment')->name('caring.update-payment');
+	Route::post('carings/deletepayment', 'CaringController@deletePayment')->name('caring.delete-payment');
+	Route::get('carings/caring_by_csv', 'CaringController@caringByCsv');
+	Route::post('importcaring', 'CaringController@importCaring')->name('caring.import');
+	Route::post('carings/deletebyselection', 'CaringController@deleteBySelection');
+	Route::resource('carings', 'CaringController');
+    Route::any('carings/add_to_wash/{id}', 'CaringController@addToWash')->name('carings.wash');
+
+    Route::post('washings/washing-data', 'WashingController@washingData')->name('washings.data');
+	Route::get('washings/product_washing/{id}','WashingController@productWashingData');
+	Route::get('washings/lims_product_search', 'WashingController@limsProductSearch')->name('product_washing.search');
+	Route::post('washings/add_payment', 'WashingController@addPayment')->name('washing.add-payment');
+	Route::get('washings/getpayment/{id}', 'WashingController@getPayment')->name('washing.get-payment');
+	Route::post('washings/updatepayment', 'WashingController@updatePayment')->name('washing.update-payment');
+	Route::post('washings/deletepayment', 'WashingController@deletePayment')->name('washing.delete-payment');
+	Route::get('washings/washing_by_csv', 'WashingController@washingByCsv');
+	Route::post('importwashing', 'WashingController@importWashing')->name('washing.import');
+	Route::post('washings/deletebyselection', 'WashingController@deleteBySelection');
+	Route::resource('washings', 'WashingController');
+    Route::any('washings/add_to_pack/{id}', 'WashingController@addToPack')->name('washings.pack');
+
+    Route::post('packings/packing-data', 'PackingController@packingData')->name('packings.data');
+	Route::get('packings/product_packing/{id}','PackingController@productPackingData');
+	Route::get('packings/lims_product_search', 'PackingController@limsProductSearch')->name('product_packing.search');
+	Route::post('packings/add_payment', 'PackingController@addPayment')->name('packing.add-payment');
+	Route::get('packings/getpayment/{id}', 'PackingController@getPayment')->name('packing.get-payment');
+	Route::post('packings/updatepayment', 'PackingController@updatePayment')->name('packing.update-payment');
+	Route::post('packings/deletepayment', 'PackingController@deletePayment')->name('packing.delete-payment');
+	Route::get('packings/packing_by_csv', 'PackingController@packingByCsv');
+	Route::post('importpacking', 'PackingController@importPacking')->name('packing.import');
+	Route::post('packings/deletebyselection', 'PackingController@deleteBySelection');
+	Route::resource('packings', 'PackingController');
+    Route::any('packings/add_to_sale/{id}', 'PackingController@addToSale')->name('packings.sale');
 
 	Route::get('transfers/product_transfer/{id}','TransferController@productTransferData');
 	Route::get('transfers/transfer_by_csv', 'TransferController@transferByCsv');

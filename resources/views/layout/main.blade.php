@@ -185,6 +185,74 @@
                 </ul>
               </li>
               @endif
+              @if($index_permission_active)
+              <li><a href="#sorting" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-card"></i><span>{{trans('file.Sorting')}}</span></a>
+                <ul id="sorting" class="collapse list-unstyled ">
+                  <li id="sorting-list-menu"><a href="{{route('sortings.index')}}">{{trans('file.Sorting List')}}</a></li>
+                  <?php
+                    $add_permission = DB::table('permissions')->where('name', 'purchases-add')->first();
+                    $add_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $add_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+                  ?>
+                  @if($add_permission_active)
+                  <li id="sorting-create-menu"><a href="{{route('purchases.index')}}">{{trans('file.Add Sorting')}}</a></li>
+                  @endif
+                </ul>
+              </li>
+              @endif
+              @if($index_permission_active)
+              <li><a href="#caring" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-card"></i><span>{{trans('file.Caring')}}</span></a>
+                <ul id="caring" class="collapse list-unstyled ">
+                  <li id="caring-list-menu"><a href="{{route('carings.index')}}">{{trans('file.Caring List')}}</a></li>
+                  <?php
+                    $add_permission = DB::table('permissions')->where('name', 'purchases-add')->first();
+                    $add_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $add_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+                  ?>
+                  @if($add_permission_active)
+                  <li id="caring-create-menu"><a href="{{route('sortings.index')}}">{{trans('file.Add Caring')}}</a></li>
+                  @endif
+                </ul>
+              </li>
+              @endif
+              @if($index_permission_active)
+              <li><a href="#washing" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-card"></i><span>{{trans('file.Washing')}}</span></a>
+                <ul id="washing" class="collapse list-unstyled ">
+                  <li id="washing-list-menu"><a href="{{route('washings.index')}}">{{trans('file.Washing List')}}</a></li>
+                  <?php
+                    $add_permission = DB::table('permissions')->where('name', 'purchases-add')->first();
+                    $add_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $add_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+                  ?>
+                  @if($add_permission_active)
+                  <li id="washing-create-menu"><a href="{{route('carings.index')}}">{{trans('file.Add Washing')}}</a></li>
+                  @endif
+                </ul>
+              </li>
+              @endif
+              @if($index_permission_active)
+              <li><a href="#packing" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-card"></i><span>{{trans('file.Packing')}}</span></a>
+                <ul id="packing" class="collapse list-unstyled ">
+                  <li id="packing-list-menu"><a href="{{route('packings.index')}}">{{trans('file.Packing List')}}</a></li>
+                  <?php
+                    $add_permission = DB::table('permissions')->where('name', 'purchases-add')->first();
+                    $add_permission_active = DB::table('role_has_permissions')->where([
+                        ['permission_id', $add_permission->id],
+                        ['role_id', $role->id]
+                    ])->first();
+                  ?>
+                  @if($add_permission_active)
+                  <li id="packing-create-menu"><a href="{{route('washings.index')}}">{{trans('file.Add Packing')}}</a></li>
+                  @endif
+                </ul>
+              </li>
+              @endif
               <?php
                 $sale_index_permission = DB::table('permissions')->where('name', 'sales-index')->first();
                 $sale_index_permission_active = DB::table('role_has_permissions')->where([
@@ -996,7 +1064,7 @@
                       <li>
                         <a href="{{route('user.profile', ['id' => Auth::id()])}}"><i class="dripicons-user"></i> {{trans('file.profile')}}</a>
                       </li>
-                      @if($general_setting_permission_active)
+                      {{-- @if($general_setting_permission_active)
                       <li>
                         <a href="{{route('setting.general')}}"><i class="dripicons-gear"></i> {{trans('file.settings')}}</a>
                       </li>
@@ -1013,7 +1081,7 @@
                       <li>
                         <a onclick="return confirm('Are you sure want to delete? If you do this all of your data will be lost.')" href="{{route('setting.emptyDatabase')}}"><i class="dripicons-stack"></i> {{trans('file.Empty Database')}}</a>
                       </li>
-                      @endif
+                      @endif --}}
                       <li>
                         <a href="{{ route('logout') }}"
                            onclick="event.preventDefault();
