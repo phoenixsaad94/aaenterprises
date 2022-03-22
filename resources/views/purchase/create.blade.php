@@ -628,7 +628,7 @@ function productSearch(data) {
             data: data
         },
         success: function(data) {
-            console.log(data, (data[6]).split(','));
+            // console.log(data, (data[6]).split(','));
             var flag = 1;
             // $(".product-code").each(function(i) {
             //     if ($(this).val() == data[1]) {

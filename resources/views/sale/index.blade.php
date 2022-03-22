@@ -400,7 +400,6 @@
     var public_key = <?php echo json_encode($lims_pos_setting_data->stripe_public_key) ?>;
     var all_permission = <?php echo json_encode($all_permission) ?>;
     var sale_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
 
     $.ajaxSetup({
         headers: {
@@ -747,7 +746,7 @@
             {"data": "biller"},
             {"data": "customer"},
             {"data": "biller"},
-            {"data": "grand_total"},
+            {"data": "total_qty"},
             {"data": "sale_status"},
             {"data": "payment_status"},
             {"data": "grand_total"},
@@ -837,33 +836,29 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        sale_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                var sale = $(this).closest('tr').data('sale');
-                                sale_id[i-1] = sale[13];
+                    sale_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            var sale = $(this).closest('tr').data('sale');
+                            sale_id[i-1] = sale[13];
+                        }
+                    });
+                    if(sale_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'sales/deletebyselection',
+                            data:{
+                                saleIdArray: sale_id
+                            },
+                            success:function(data){
+                                alert(data);
+                                //dt.rows({ page: 'current', selected: true }).deselect();
+                                dt.rows({ page: 'current', selected: true }).remove().draw(false);
                             }
                         });
-                        if(sale_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'sales/deletebyselection',
-                                data:{
-                                    saleIdArray: sale_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                    //dt.rows({ page: 'current', selected: true }).deselect();
-                                    dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                                }
-                            });
-                        }
-                        else if(!sale_id.length)
-                            alert('Nothing is selected!');
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!sale_id.length)
+                        alert('Nothing is selected!');
                 }
             },
             {

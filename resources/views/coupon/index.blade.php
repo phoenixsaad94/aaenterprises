@@ -4,10 +4,10 @@
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ $errors->first('coupon_no') }}</div>
 @endif
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -32,7 +32,7 @@
             </thead>
             <tbody>
                 @foreach($lims_coupon_all as $key=>$coupon)
-                <?php 
+                <?php
                     $created_by = DB::table('users')->find($coupon->user_id);
                 ?>
                 <tr data-id="{{$coupon->id}}">
@@ -220,8 +220,7 @@
     $("ul#sale #coupon-menu").addClass("active");
 
     var coupon_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -236,7 +235,7 @@
           $("#create-modal .minimum-amount").show();
           $("#create-modal .minimum-amount").prop('required',true);
           $("#create-modal .icon-text").text('$');
-      } 
+      }
       else {
           $("#create-modal .minimum-amount").hide();
           $("#create-modal .minimum-amount").prop('required',false);
@@ -250,7 +249,7 @@
           $("#editModal .minimum-amount").show();
           $("#editModal .minimum-amount").prop('required',true);
           $("#editModal .icon-text").text('$');
-      } 
+      }
       else {
           $("#editModal .minimum-amount").hide();
           $("#editModal .minimum-amount").prop('required',false);
@@ -260,7 +259,7 @@
 
     $(document).on("click", '#create-modal .genbutton', function(){
       $.get('coupons/gencode', function(data){
-        $("input[name='code']").val(data);      
+        $("input[name='code']").val(data);
       });
     });
 
@@ -371,31 +370,28 @@ function confirmDelete() {
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        coupon_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                coupon_id[i-1] = $(this).closest('tr').data('id');
+                    coupon_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            coupon_id[i-1] = $(this).closest('tr').data('id');
+                        }
+                    });
+                    if(coupon_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'coupons/deletebyselection',
+                            data:{
+                                couponIdArray: coupon_id
+                            },
+                            success:function(data){
+                                alert(data);
                             }
                         });
-                        if(coupon_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'coupons/deletebyselection',
-                                data:{
-                                    couponIdArray: coupon_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!coupon_id.length)
-                            alert('No coupon is selected!');
+                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!coupon_id.length)
+                        alert('No coupon is selected!');
+
                 }
             },
             {

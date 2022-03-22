@@ -144,7 +144,6 @@
     var slidertext;
     var product_id = [];
     var all_permission = <?php echo json_encode($all_permission) ?>;
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -443,32 +442,28 @@
                     text: '{{trans("file.delete")}}',
                     className: 'buttons-delete',
                     action: function ( e, dt, node, config ) {
-                        if(user_verified == '1') {
-                            product_id.length = 0;
-                            $(':checkbox:checked').each(function(i){
-                                if(i){
-                                    var product_data = $(this).closest('tr').data('product');
-                                    product_id[i-1] = product_data[12];
+                        product_id.length = 0;
+                        $(':checkbox:checked').each(function(i){
+                            if(i){
+                                var product_data = $(this).closest('tr').data('product');
+                                product_id[i-1] = product_data[12];
+                            }
+                        });
+                        if(product_id.length && confirmDelete()) {
+                            $.ajax({
+                                type:'POST',
+                                url:'products/deletebyselection',
+                                data:{
+                                    productIdArray: product_id
+                                },
+                                success:function(data){
+                                    dt.rows({ page: 'current', selected: true }).deselect();
+                                    dt.rows({ page: 'current', selected: true }).remove().draw(false);
                                 }
                             });
-                            if(product_id.length && confirmDelete()) {
-                                $.ajax({
-                                    type:'POST',
-                                    url:'products/deletebyselection',
-                                    data:{
-                                        productIdArray: product_id
-                                    },
-                                    success:function(data){
-                                        dt.rows({ page: 'current', selected: true }).deselect();
-                                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                                    }
-                                });
-                            }
-                            else if(!product_id.length)
-                                alert('No product is selected!');
                         }
-                        else
-                            alert('This feature is disable for demo!');
+                        else if(!product_id.length)
+                            alert('No product is selected!');
                     }
                 },
                 {

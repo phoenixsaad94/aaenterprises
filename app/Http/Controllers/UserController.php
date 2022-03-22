@@ -72,7 +72,7 @@ class UserController extends Controller
                 }),
             ],
         ]);
-        
+
         if($request->role_id == 5) {
             $this->validate($request, [
                 'phone_number' => [
@@ -107,7 +107,7 @@ class UserController extends Controller
             $data['is_active'] = true;
             Customer::create($data);
         }
-        return redirect('user')->with('message1', $message); 
+        return redirect('user')->with('message1', $message);
     }
 
     public function edit($id)
@@ -126,8 +126,6 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        if(!env('USER_VERIFIED'))
-            return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
 
         $this->validate($request, [
             'name' => [
@@ -163,9 +161,6 @@ class UserController extends Controller
 
     public function profileUpdate(Request $request, $id)
     {
-        if(!env('USER_VERIFIED'))
-            return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
-
         $input = $request->all();
         $lims_user_data = User::find($id);
         $lims_user_data->update($input);
@@ -174,9 +169,6 @@ class UserController extends Controller
 
     public function changePassword(Request $request, $id)
     {
-        if(!env('USER_VERIFIED'))
-            return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
-
         $input = $request->all();
         $lims_user_data = User::find($id);
         if($input['new_pass'] != $input['confirm_pass'])
@@ -207,9 +199,6 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        if(!env('USER_VERIFIED'))
-            return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
-        
         $lims_user_data = User::find($id);
         $lims_user_data->is_deleted = true;
         $lims_user_data->is_active = false;

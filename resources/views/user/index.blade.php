@@ -1,15 +1,15 @@
 @extends('layout.main') @section('content')
 @if(session()->has('message1'))
-        <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message1') !!}</div> 
+        <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message1') !!}</div>
 @endif
 @if(session()->has('message2'))
-        <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message2') }}</div> 
+        <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message2') }}</div>
 @endif
 @if(session()->has('message3'))
-        <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message3') }}</div> 
+        <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message3') }}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -84,7 +84,6 @@
     $("ul#people #user-list-menu").addClass("active");
 
     var user_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
     var all_permission = <?php echo json_encode($all_permission) ?>;
 
     $.ajaxSetup({
@@ -163,31 +162,27 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        user_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                user_id[i-1] = $(this).closest('tr').data('id');
+                    user_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            user_id[i-1] = $(this).closest('tr').data('id');
+                        }
+                    });
+                    if(user_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'user/deletebyselection',
+                            data:{
+                                userIdArray: user_id
+                            },
+                            success:function(data){
+                                alert(data);
                             }
                         });
-                        if(user_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'user/deletebyselection',
-                                data:{
-                                    userIdArray: user_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!user_id.length)
-                            alert('No user is selected!');
+                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!user_id.length)
+                        alert('No user is selected!');
                 }
             },
             {

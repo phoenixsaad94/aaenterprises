@@ -22,10 +22,10 @@ class RoleController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
     }
 
-    
+
     public function create()
     {
-        
+
     }
 
     public function store(Request $request)
@@ -88,8 +88,6 @@ class RoleController extends Controller
 
     public function setPermission(Request $request)
     {
-        if(!env('USER_VERIFIED'))
-            return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
 
         $role = Role::firstOrCreate(['id' => $request['role_id']]);
 
@@ -1006,8 +1004,6 @@ class RoleController extends Controller
 
     public function destroy($id)
     {
-        if(!env('USER_VERIFIED'))
-            return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
         $lims_role_data = Roles::find($id);
         $lims_role_data->is_active = false;
         $lims_role_data->save();

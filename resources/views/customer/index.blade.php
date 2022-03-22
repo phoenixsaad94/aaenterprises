@@ -1,15 +1,15 @@
 @extends('layout.main') @section('content')
 @if(session()->has('create_message'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('create_message') !!}</div> 
+    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('create_message') !!}</div>
 @endif
 @if(session()->has('edit_message'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('edit_message') }}</div> 
+    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('edit_message') }}</div>
 @endif
 @if(session()->has('import_message'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('import_message') !!}</div> 
+    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('import_message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -58,7 +58,7 @@
                             </button>
                             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
                                 @if(in_array("customers-edit", $all_permission))
-                                <li> 
+                                <li>
                                     <a href="{{ route('customer.edit', $customer->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a>
                                 </li>
                                 @endif
@@ -208,9 +208,8 @@
     }
 
     var customer_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
     var all_permission = <?php echo json_encode($all_permission) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -254,7 +253,7 @@
         var note = $('table.deposit-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(3)').text();
         if(note == 'N/A')
             note = '';
-        
+
         $('#edit-deposit input[name="deposit_id"]').val(id);
         $('#edit-deposit input[name="amount"]').val(amount);
         $('#edit-deposit textarea[name="note"]').val(note);
@@ -324,31 +323,28 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        customer_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                customer_id[i-1] = $(this).closest('tr').data('id');
+                    customer_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            customer_id[i-1] = $(this).closest('tr').data('id');
+                        }
+                    });
+                    if(customer_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'customer/deletebyselection',
+                            data:{
+                                customerIdArray: customer_id
+                            },
+                            success:function(data){
+                                alert(data);
                             }
                         });
-                        if(customer_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'customer/deletebyselection',
-                                data:{
-                                    customerIdArray: customer_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!customer_id.length)
-                            alert('No customer is selected!');
+                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!customer_id.length)
+                        alert('No customer is selected!');
+
                 }
             },
             {

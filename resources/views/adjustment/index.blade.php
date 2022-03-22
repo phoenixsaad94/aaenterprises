@@ -1,10 +1,10 @@
 @extends('layout.main')
 @section('content')
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -48,11 +48,11 @@
                             else {
                                 $product = DB::table('products')->select('name','code')->find($product_adjustment->product_id);
                             }
-                    	 	
+
                     	 	if($key)
                     	 		echo '<br>';
                     	 	echo $product->name.' ['.$product->code.']';
-                    	 } 
+                    	 }
                     ?>
                     </td>
                     <td>{{$adjustment->note}}</td>
@@ -62,7 +62,7 @@
                             </button>
                             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
                                 <li>
-                                    <a href="{{ route('qty_adjustment.edit', $adjustment->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a> 
+                                    <a href="{{ route('qty_adjustment.edit', $adjustment->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{trans('file.edit')}}</a>
                                 </li>
                                 <li class="divider"></li>
                                 {{ Form::open(['route' => ['qty_adjustment.destroy', $adjustment->id], 'method' => 'DELETE'] ) }}
@@ -92,7 +92,6 @@
     }
 
     var adjustment_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
 
     $.ajaxSetup({
         headers: {
@@ -158,31 +157,27 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        adjustment_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                adjustment_id[i-1] = $(this).closest('tr').data('id');
+                    adjustment_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            adjustment_id[i-1] = $(this).closest('tr').data('id');
+                        }
+                    });
+                    if(adjustment_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'qty_adjustment/deletebyselection',
+                            data:{
+                                adjustmentIdArray: adjustment_id
+                            },
+                            success:function(data){
+                                alert(data);
                             }
                         });
-                        if(adjustment_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'qty_adjustment/deletebyselection',
-                                data:{
-                                    adjustmentIdArray: adjustment_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!adjustment_id.length)
-                            alert('Nothing is selected!');
+                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!adjustment_id.length)
+                        alert('Nothing is selected!');
                 }
             },
             {

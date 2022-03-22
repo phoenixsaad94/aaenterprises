@@ -318,7 +318,6 @@
     var all_permission = <?php echo json_encode($all_permission) ?>;
 
     var purchase_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
 
     $.ajaxSetup({
         headers: {
@@ -635,33 +634,29 @@
                     text: '{{trans("file.delete")}}',
                     className: 'buttons-delete',
                     action: function ( e, dt, node, config ) {
-                        if(user_verified == '1') {
-                            purchase_id.length = 0;
-                            $(':checkbox:checked').each(function(i){
-                                if(i){
-                                    var purchase = $(this).closest('tr').data('purchase');
-                                    purchase_id[i-1] = purchase[3];
+                        purchase_id.length = 0;
+                        $(':checkbox:checked').each(function(i){
+                            if(i){
+                                var purchase = $(this).closest('tr').data('purchase');
+                                purchase_id[i-1] = purchase[3];
+                            }
+                        });
+                        if(purchase_id.length && confirm("Are you sure want to delete?")) {
+                            $.ajax({
+                                type:'POST',
+                                url:'carings/deletebyselection',
+                                data:{
+                                    purchaseIdArray: purchase_id
+                                },
+                                success:function(data) {
+                                    alert(data);
+                                    //dt.rows({ page: 'current', selected: true }).deselect();
+                                    dt.rows({ page: 'current', selected: true }).remove().draw(false);
                                 }
                             });
-                            if(purchase_id.length && confirm("Are you sure want to delete?")) {
-                                $.ajax({
-                                    type:'POST',
-                                    url:'carings/deletebyselection',
-                                    data:{
-                                        purchaseIdArray: purchase_id
-                                    },
-                                    success:function(data) {
-                                        alert(data);
-                                        //dt.rows({ page: 'current', selected: true }).deselect();
-                                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                                    }
-                                });
-                            }
-                            else if(!purchase_id.length)
-                                alert('Nothing is selected!');
                         }
-                        else
-                            alert('This feature is disable for demo!');
+                        else if(!purchase_id.length)
+                            alert('Nothing is selected!');
                     }
                 },
                 {

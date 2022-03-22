@@ -5,10 +5,10 @@
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ $errors->first('name') }}</div>
 @endif
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -74,11 +74,11 @@
           <label>{{trans('file.name')}} *</label>
           <input type="text" name="name" required="required" class="form-control">
         </div>
-        <div class="form-group">       
+        <div class="form-group">
           <label>{{trans('file.Percentage')}}(%) *</label>
           <input type="text" name="percentage" required="required" class="form-control">
-        </div>                
-        <div class="form-group">       
+        </div>
+        <div class="form-group">
           <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
         </div>
       </form>
@@ -104,11 +104,11 @@
           <label>{{trans('file.name')}} *</label>
           <input type="text" name="name" required="required" class="form-control">
         </div>
-        <div class="form-group">       
+        <div class="form-group">
           <label>{{trans('file.Percentage')}}(%) *</label>
           <input type="text" name="percentage" required="required" class="form-control">
-        </div>                
-        <div class="form-group">       
+        </div>
+        <div class="form-group">
           <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
         </div>
     </div>
@@ -156,8 +156,7 @@
     $("ul#setting #customer-group-menu").addClass("active");
 
     var customer_group_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -171,7 +170,7 @@
       return false;
   }
     $(document).ready(function() {
-        
+
         $(document).on('click', '.open-EditCustomerGroupDialog', function() {
             var url = "customer_group/"
             var id = $(this).data('id').toString();
@@ -248,31 +247,27 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        customer_group_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                customer_group_id[i-1] = $(this).closest('tr').data('id');
+                    customer_group_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            customer_group_id[i-1] = $(this).closest('tr').data('id');
+                        }
+                    });
+                    if(customer_group_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'customer_group/deletebyselection',
+                            data:{
+                                customer_groupIdArray: customer_group_id
+                            },
+                            success:function(data){
+                                alert(data);
                             }
                         });
-                        if(customer_group_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'customer_group/deletebyselection',
-                                data:{
-                                    customer_groupIdArray: customer_group_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!customer_group_id.length)
-                            alert('No customer group is selected!');
+                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!customer_group_id.length)
+                        alert('No customer group is selected!');
                 }
             },
             {
@@ -292,7 +287,7 @@
     $( "#select_all" ).on( "change", function() {
         if ($(this).is(':checked')) {
             $("tbody input[type='checkbox']").prop('checked', true);
-        } 
+        }
         else {
             $("tbody input[type='checkbox']").prop('checked', false);
         }

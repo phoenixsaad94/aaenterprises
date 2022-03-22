@@ -78,6 +78,14 @@
                                         </div>
                                     </div>
                                 </div>
+                                <?php
+                                    $role = DB::table('roles')->find(Auth::user()->role_id);
+                                    $price_permission = DB::table('permissions')->where('name', 'price-edit')->first();
+                                    $price_permission_active = DB::table('role_has_permissions')->where([
+                                        ['permission_id', $price_permission->id],
+                                        ['role_id', $role->id]
+                                    ])->first();
+                                ?>
                                 <div class="row mt-5">
                                     <div class="col-md-12">
                                         <h5>{{trans('file.Order Table')}} *</h5>
@@ -89,7 +97,9 @@
                                                         <th>{{trans('file.Code')}}</th>
                                                         <!-- <th>{{trans('file.Quantity')}}</th> -->
                                                         <th>{{trans('file.Weight')}}</th>
-                                                        <th>{{trans('file.Net Cost')}}</th>
+                                                        @if($price_permission_active)
+                                                            <th>{{trans('file.Net Cost')}}</th>
+                                                        @endif
                                                         <th class="recieved-product-qty d-none">{{trans('file.Recieved')}}</th>
                                                         {{-- <th>{{trans('file.Batch No')}}</th>
                                                         <th>{{trans('file.Expired Date')}}</th>
@@ -105,6 +115,7 @@
                                                         $temp_unit_name = [];
                                                         $temp_unit_operator = [];
                                                         $temp_unit_operation_value = [];
+
                                                     ?>
                                                     @foreach($lims_product_purchase_data as $product_purchase)
                                                     <tr>
@@ -161,24 +172,28 @@
                                                         <td>{{$product_data->code}}</td>
                                                         <td><input type="number" class="form-control qty" name="qty[]" value="{{$product_purchase->qty}}" step="any" required /></td>
                                                         <td class="recieved-product-qty d-none"><input type="number" class="form-control recieved" name="recieved[]" value="{{$product_purchase->recieved}}" step="any"/></td>
-                                                        <td><input type="number" class="form-control net_cost" name="net_cost[]" value="{{$product_purchase->total}}" step="any" required /></td>
-                                                        @if($product_purchase->product_batch_id)
-                                                        <!-- <td>
+                                                        @if($price_permission_active)
+                                                            <td><input type="number" class="form-control net_cost" name="net_cost[]" value="{{$product_purchase->total}}" step="any" required /></td>
+                                                        @else
+                                                            <td><input type="hidden" class="form-control net_cost" name="net_cost[]" value="{{$product_purchase->total}}" step="any" required /></td>
+                                                        @endif
+                                                        <!-- @if($product_purchase->product_batch_id)
+                                                         <td>
                                                             <input type="hidden" name="product_batch_id[]" value="{{$product_purchase->product_batch_id}}">
                                                             <input type="text" class="form-control batch-no" name="batch_no[]" value="{{$product_batch_data->batch_no}}" required/>
                                                         </td>
                                                         <td>
                                                             <input type="text" class="form-control expired-date" name="expired_date[]" value="{{$product_batch_data->expired_date}}" required/>
                                                         </td> -->
-                                                        @else
-                                                        <!-- <td>
+                                                        <!-- @else
+                                                         <td>
                                                             <input type="hidden" name="product_batch_id[]">
                                                             <input type="text" class="form-control batch-no" name="batch_no[]" disabled />
                                                         </td>
                                                         <td>
                                                             <input type="text" class="form-control expired-date" name="expired_date[]" disabled />
-                                                        </td> -->
-                                                        @endif
+                                                        </td>
+                                                        @endif -->
                                                         <!-- <td class="net_unit_cost">{{ number_format((float)$product_purchase->net_unit_cost, 2, '.', '') }} </td>
                                                         <td class="discount">{{ number_format((float)$product_purchase->discount, 2, '.', '') }}</td>
                                                         <td class="tax">{{ number_format((float)$product_purchase->tax, 2, '.', '') }}</td>
@@ -214,7 +229,11 @@
                                                 <tfoot class="tfoot active">
                                                     <th colspan="2">{{trans('file.Total')}}</th>
                                                     <th id="total-qty">{{$lims_purchase_data->total_qty}}</th>
-                                                    <th id="total-cost">{{ number_format((float)$lims_purchase_data->total_cost, 2, '.', '') }}</th>
+                                                    <th id="total-cost">
+                                                    @if($price_permission_active)
+                                                        {{ number_format((float)$lims_purchase_data->total_cost, 2, '.', '') }}
+                                                    @endif
+                                                    </th>
                                                     {{-- <th></th>
                                                     <th></th>
                                                     <th></th>
@@ -320,9 +339,11 @@
             <td><strong>{{trans('file.Total Weight')}}</strong>
                 <span class="pull-right" id="total_weight">0</span>
             </td>
+            @if($price_permission_active)
             <td><strong>{{trans('file.Total Cost')}}</strong>
                 <span class="pull-right" id="total_amount">0</span>
             </td>
+            @endif
             <!-- <td><strong>{{trans('file.Total')}}</strong>
                 <span class="pull-right" id="subtotal">0.00</span>
             </td>

@@ -1,7 +1,7 @@
 @extends('layout.main') @section('content')
 
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 <section class="forms">
     <div class="container-fluid">
@@ -91,7 +91,7 @@
                                           @endforeach
                                         </select>
                                     </div>
-                                </div>                              
+                                </div>
                             </div>
                         {!! Form::close() !!}
                     </div>
@@ -106,8 +106,8 @@
     $("ul#people").addClass("show");
     $('#biller-id').hide();
     $('#warehouseId').hide();
-    
-    
+
+
 
     $('select[name=role_id]').val($("input[name='role_id_hidden']").val());
     if($('select[name=role_id]').val() > 2){
@@ -120,8 +120,8 @@
 
     $('select[name="role_id"]').on('change', function() {
         if($(this).val() > 2){
-            $('select[name="warehouse_id"]').prop('required',true);
-            $('select[name="biller_id"]').prop('required',true);
+            // $('select[name="warehouse_id"]').prop('required',true);
+            // $('select[name="biller_id"]').prop('required',true);
             $('#biller-id').show();
             $('#warehouseId').show();
         }

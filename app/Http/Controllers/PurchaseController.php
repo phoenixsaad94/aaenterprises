@@ -231,11 +231,14 @@ class PurchaseController extends Controller
                             <a href="'.route('purchases.edit', $purchase->id).'" class="btn btn-link"><i class="dripicons-document-edit"></i> '.trans('file.edit').'</a>
                         </li>
                         <li>
-                            <a href="'.route('purchases.add_price', $purchase->id).'" class="btn btn-link"><i class="fa fa-plus"></i> '.trans('file.Add Price').'</a>
-                        </li>
-                        <li>
                             <a href="'.route('purchases.sort', $purchase->id).'" class="btn btn-link"><i class="fa fa-plus"></i> '.trans('file.Add To Sorting').'</a>
                         </li>';
+                if(in_array("price-edit", $request['all_permission']))
+                    $nestedData['options'] .=
+                        '<li>
+                            <a href="'.route('purchases.add_price', $purchase->id).'" class="btn btn-link"><i class="fa fa-plus"></i> '.trans('file.Add Price').'</a>
+                        </li>';
+
                 // $nestedData['options'] .=
                 //     '<li>
                 //         <button type="button" class="add-payment btn btn-link" data-id = "'.$purchase->id.'" data-toggle="modal" data-target="#add-payment"><i class="fa fa-plus"></i> '.trans('file.Add Payment').'</button>
@@ -727,7 +730,14 @@ class PurchaseController extends Controller
 
     public function addPrice($id){
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('purchases-edit')){
+        $price_permission = DB::table('permissions')->where('name', 'price-edit')->first();
+        $price_permission_active = DB::table('role_has_permissions')->where([
+            ['permission_id', $price_permission->id],
+            ['role_id', $role->id]
+        ])->first();
+        // if($role->hasPermissionTo('purchases-edit')){
+        // if($role->hasPermissionTo('price-edit')){
+        if($price_permission_active){
             $lims_supplier_list = Supplier::where('is_active', true)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_tax_list = Tax::where('is_active', true)->get();

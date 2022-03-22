@@ -1,9 +1,9 @@
 @extends('layout.main') @section('content')
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 <section>
     <div class="container-fluid">
@@ -118,8 +118,7 @@
 
     var all_permission = <?php echo json_encode($all_permission) ?>;
     var supplier_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -199,7 +198,7 @@
                         body: function ( data, row, column, node ) {
                             if (column === 0 && (data.indexOf('<img src=') !== -1)) {
                                 var regex = /<img.*?src=['"](.*?)['"]/;
-                                data = regex.exec(data)[1];                 
+                                data = regex.exec(data)[1];
                             }
                             return data;
                         }
@@ -219,31 +218,27 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        supplier_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                supplier_id[i-1] = $(this).closest('tr').data('id');
+                    supplier_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            supplier_id[i-1] = $(this).closest('tr').data('id');
+                        }
+                    });
+                    if(supplier_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'supplier/deletebyselection',
+                            data:{
+                                supplierIdArray: supplier_id
+                            },
+                            success:function(data){
+                                alert(data);
                             }
                         });
-                        if(supplier_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'supplier/deletebyselection',
-                                data:{
-                                    supplierIdArray: supplier_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!supplier_id.length)
-                            alert('No supplier is selected!');
+                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!supplier_id.length)
+                        alert('No supplier is selected!');
                 }
             },
             {

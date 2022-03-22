@@ -1,9 +1,9 @@
 @extends('layout.main') @section('content')
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -22,7 +22,7 @@
             </thead>
             <tbody>
                 @foreach($lims_delivery_all as $key=>$delivery)
-                <?php 
+                <?php
                     $customer_sale = DB::table('sales')->join('customers', 'sales.customer_id', '=', 'customers.id')->where('sales.id', $delivery->sale_id)->select('sales.reference_no','customers.name')->get();
 
                     if($delivery->status == 1)
@@ -31,7 +31,7 @@
                         $status = trans('file.Delivering');
                     else
                         $status = trans('file.Delivered');
-                    
+
                     $barcode = \DNS2D::getBarcodePNG($delivery->reference_no, 'QRCODE');
                 ?>
                 <tr class="delivery-link" data-barcode="{{$barcode}}" data-delivery='["{{date($general_setting->date_format, strtotime($delivery->created_at->toDateString()))}}", "{{$delivery->reference_no}}", "{{$delivery->sale->reference_no}}", "{{$status}}", "{{$delivery->id}}", "{{$delivery->sale->customer->name}}", "{{$delivery->sale->customer->phone_number}}", "{{$delivery->sale->customer->address}}", "{{$delivery->sale->customer->city}}", "{{$delivery->note}}", "{{$delivery->user->name}}", "{{$delivery->delivered_by}}", "{{$delivery->recieved_by}}"]'>
@@ -60,7 +60,7 @@
                                 <li class="divider"></li>
                                 {{ Form::open(['route' => ['delivery.delete', $delivery->id], 'method' => 'post'] ) }}
                                 <li>
-                                  <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{trans('file.delete')}}</button> 
+                                  <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{trans('file.delete')}}</button>
                                 </li>
                                 {{ Form::close() }}
                             </ul>
@@ -117,8 +117,8 @@
                 </tbody>
             </table>
             <div id="delivery-footer" class="row">
-            </div>            
-        </div>    
+            </div>
+        </div>
       </div>
     </div>
 </div>
@@ -190,8 +190,7 @@
     $("ul#sale #delivery-menu").addClass("active");
 
     var delivery_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -268,10 +267,10 @@
 
     $(document).ready(function() {
         $('.open-EditCategoryDialog').on('click', function(){
-          var url ="delivery/"  
+          var url ="delivery/"
           var id = $(this).data('id').toString();
           url = url.concat(id).concat("/edit");
-          
+
           $.get(url, function(data){
                 $('#dr').text(data[0]);
                 $('#sr').text(data[1]);
@@ -352,31 +351,27 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        delivery_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                delivery_id[i-1] = $(this).closest('tr').data('id');
+                    delivery_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            delivery_id[i-1] = $(this).closest('tr').data('id');
+                        }
+                    });
+                    if(delivery_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'delivery/deletebyselection',
+                            data:{
+                                deliveryIdArray: delivery_id
+                            },
+                            success:function(data){
+                                alert(data);
                             }
                         });
-                        if(delivery_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'delivery/deletebyselection',
-                                data:{
-                                    deliveryIdArray: delivery_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                }
-                            });
-                            dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!delivery_id.length)
-                            alert('Nothing is selected!');
+                        dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!delivery_id.length)
+                        alert('Nothing is selected!');
                 }
             },
             {

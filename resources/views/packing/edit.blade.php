@@ -46,6 +46,19 @@
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>{{trans('file.customer')}}</label>
+                                            <input type="hidden" name="customer_id_hidden" value="{{ $lims_purchase_data->customer_id }}" />
+                                            <select name="customer_id" class="selectpicker form-control" data-live-search="true" id="customer-id" data-live-search-style="begins" title="Select customer...">
+                                                @foreach($lims_customer_list as $customer)
+                                                <option value="{{$customer->id}}">{{$customer->name .' ('. $customer->company_name .')'}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
                                 	<div class="col-md-4">
                                         <div class="form-group">
                                             <!-- <label>{{trans('file.Purchase Status')}}</label> -->

@@ -264,6 +264,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    @foreach($lims_product_purchase_data as $product_purchase)
+                                        <input type="hidden" class="old-product-id" name="old_product_id[]" value="{{$product_data->id}}"/>
+                                        <input type="hidden" class="old-product-code" name="old_product_code[]" value="{{$product_data->code}}"/>
+                                    @endforeach
+                                </div>
                                 <!-- <div class="row mt-5">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -466,6 +472,7 @@ var customer_group_rate;
 var row_product_cost;
 
 var rownumber = $('table.order-list tbody tr:last').index();
+var signal;
 
 for(rowindex  =0; rowindex <= rownumber; rowindex++){
 
@@ -1050,7 +1057,6 @@ $('#purchase-form').on('submit',function(e){
         alert("Please insert product to order table!")
         e.preventDefault();
     }
-
     // else if($('select[name="status"]').val() != 1)
     else if($('input[name="status"]').val() != 1)
     {
@@ -1070,8 +1076,37 @@ $('#purchase-form').on('submit',function(e){
             e.preventDefault();
         }
     }
-    else
-        $(".batch-no, .expired-date").prop('disabled', false);
+    else{
+        signal = 0;
+        $(".old-product-id").each(function(indx, val) {
+            // rowindex = $(this).closest('tr').index();
+            oldProductId =  $(this).val();
+            // oldProductId =  val;
+            // oldProductCode = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.old-product-code').val();
+            checkProductId(oldProductId);
+
+        });
+        if(signal){
+            alert('Please Delete the old product that is already sorted out');
+            e.preventDefault();
+        }
+    }
+    // else
+    //     $(".batch-no, .expired-date").prop('disabled', false);
 });
+
+function checkProductId(oldProductId){
+    $(".product-id").each(function(indx2, val2) {
+        ProductId =  $(this).val();
+    //     ProductId =  val2;
+
+        console.log('signal', signal, oldProductId, ProductId,)
+        if(oldProductId == ProductId){
+            signal = 1;
+            return false;
+        }
+    });
+}
+
 </script>
 @endsection

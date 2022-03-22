@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Warehouse;
 use App\Supplier;
+use App\Customer;
 use App\Product;
 use App\Unit;
 use App\Tax;
@@ -14,7 +15,7 @@ use App\ProductWashing;
 use App\Packing;
 use App\ProductPacking;
 use App\Sale;
-use App\ProductSale;
+use App\Product_Sale;
 use App\Product_Warehouse;
 use App\Payment;
 use App\PaymentWithCheque;
@@ -558,8 +559,8 @@ class PackingController extends Controller
             $product_packing[3][$key] = $product_packing_data->tax;
             $product_packing[4][$key] = $product_packing_data->tax_rate;
             $product_packing[5][$key] = $product_packing_data->discount;
-            $product_packing[6][$key] = $product_packing_data->total; 
-            $product_packing[8][$key] = $product_packing_data->wastage; 
+            $product_packing[6][$key] = $product_packing_data->total;
+            $product_packing[8][$key] = $product_packing_data->wastage;
         }
         return $product_packing;
     }
@@ -708,6 +709,7 @@ class PackingController extends Controller
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('purchases-edit')){
             $lims_supplier_list = Supplier::where('is_active', true)->get();
+            $lims_customer_list = Customer::where('is_active', true)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_tax_list = Tax::where('is_active', true)->get();
             $lims_product_list_without_variant = $this->productWithoutVariant();
@@ -715,7 +717,7 @@ class PackingController extends Controller
             $lims_purchase_data = Packing::find($id);
             $lims_product_purchase_data = ProductPacking::where('packing_id', $id)->get();
 
-            return view('packing.edit', compact('lims_warehouse_list', 'lims_supplier_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_tax_list', 'lims_purchase_data', 'lims_product_purchase_data'));
+            return view('packing.edit', compact('lims_warehouse_list', 'lims_supplier_list', 'lims_customer_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_tax_list', 'lims_purchase_data', 'lims_product_purchase_data'));
         }
         else
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
@@ -756,8 +758,12 @@ class PackingController extends Controller
             // unset($lims_purchase_data['id']);
             // unset($lims_purchase_data['created_at']);
             // unset($lims_purchase_data['updated_at']);
+            // $lims_packing_data['customer_id'] = $lims_packing_data['supplier_id'];
+            $lims_packing_data['customer_id'] = 0;
+            $lims_packing_data['total_price'] = $lims_packing_data['total_cost'];
+            $lims_packing_data['sale_status'] = $lims_packing_data['status'];
             $lims_packing_data['packing_id'] = $id;
-            $lims_packing_data['note'] = '';
+            $lims_packing_data['sale_note'] = '';
 
             $sale_create = Sale::create($lims_packing_data);
             foreach($lims_product_packing_data as $packing_data){
@@ -766,7 +772,13 @@ class PackingController extends Controller
                 // unset($packing_data['updated_at']);
                 $packing_data['packing_id'] = $id;
                 $packing_data['sale_id'] = $sale_create->id;
-                $purchase_sale_create = ProductSale::create($packing_data);
+                $packing_data['sale_unit_id'] = $packing_data['purchase_unit_id'];
+                $packing_data['net_unit_price'] = $packing_data['net_unit_cost'];
+                $packing_data['sale_unit_id_2'] = $packing_data['purchase_unit_id_2'];
+                $packing_data['sale_unit_value_2'] = $packing_data['purchase_unit_value_2'];
+                $packing_data['sale_unit_id_3'] = $packing_data['purchase_unit_id_3'];
+                $packing_data['sale_unit_value_3'] = $packing_data['purchase_unit_value_3'];
+                $purchase_sale_create = Product_Sale::create($packing_data);
                 // dd($packing_data['packing_id'], $packing_data, $purchase_packing_create);
                 // ProductPacking::where('packing_id', $id)->delete();
             }

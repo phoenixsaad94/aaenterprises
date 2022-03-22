@@ -91,6 +91,18 @@
     </div>
 </section>
 
+<?php
+    $role = DB::table('roles')->find(Auth::user()->role_id);
+    $price_permission = DB::table('permissions')->where('name', 'price-edit')->first();
+    $price_permission_active = DB::table('role_has_permissions')->where([
+        ['permission_id', $price_permission->id],
+        ['role_id', $role->id]
+    ])->first();
+?>
+
+<input type="hidden" id="price_permission" name="price_permission" value="{{$price_permission_active}}" />
+
+
 <div id="purchase-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
     <div role="document" class="modal-dialog">
       <div class="modal-content">
@@ -316,7 +328,6 @@
     var all_permission = <?php echo json_encode($all_permission) ?>;
 
     var purchase_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
 
     $.ajaxSetup({
         headers: {
@@ -632,7 +643,6 @@
                     text: '{{trans("file.delete")}}',
                     className: 'buttons-delete',
                     action: function ( e, dt, node, config ) {
-                        if(user_verified == '1') {
                             purchase_id.length = 0;
                             $(':checkbox:checked').each(function(i){
                                 if(i){
@@ -656,9 +666,6 @@
                             }
                             else if(!purchase_id.length)
                                 alert('Nothing is selected!');
-                        }
-                        else
-                            alert('This feature is disable for demo!');
                     }
                 },
                 {
@@ -692,8 +699,10 @@
         }
     }
 
+
     function purchaseDetails(purchase){
-        console.log('purchase', purchase)
+
+        var price_permission = $("#price_permission").val();
         var htmltext = '<strong>{{trans("file.Date")}}: </strong>'+purchase[0]+'<br><strong>{{trans("file.reference")}}: </strong>'+purchase[1]+'<br><strong>{{trans("file.Purchase Status")}}: </strong>'+purchase[2]+'<br><br><div class="row"><div class="col-md-6"><strong>{{trans("file.From")}}:</strong><br>'+purchase[4]+'<br>'+purchase[5]+'<br>'+purchase[6]+'</div><div class="col-md-6"><div class="float-right"><strong>{{trans("file.To")}}:</strong><br>'+purchase[7]+'<br>'+purchase[8]+'<br>'+purchase[9]+'<br>'+purchase[10]+'<br>'+purchase[11]+'<br>'+purchase[12]+'</div></div></div>';
 
         $.get('purchases/product_purchase/' + purchase[3], function(data){
@@ -718,7 +727,12 @@
                 // cols += '<td>' + (subtotal[index] / qty[index]) + '</td>';
                 // cols += '<td>' + tax[index] + '(' + tax_rate[index] + '%)' + '</td>';
                 // cols += '<td>' + discount[index] + '</td>';
-                cols += '<td>' + subtotal[index] + '</td>';
+                if(price_permission){
+                    cols += '<td>' + subtotal[index] + '</td>';
+                }else{
+                    cols += '<td>' + 0 + '</td>';
+                }
+
                 total_qty += qty[index];
                 newRow.append(cols);
                 newBody.append(newRow);
@@ -732,7 +746,11 @@
             cols += '<td>' + total_qty + '</td>';
             // cols += '<td>' + purchase[13] + '</td>';
             // cols += '<td>' + purchase[14] + '</td>';
-            cols += '<td>' + purchase[15] + '</td>';
+            if(price_permission){
+                cols += '<td>' + purchase[15] + '</td>';
+            }else{
+                cols += '<td>' + 0 + '</td>';
+            }
             newRow.append(cols);
             newBody.append(newRow);
 

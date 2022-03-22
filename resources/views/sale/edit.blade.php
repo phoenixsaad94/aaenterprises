@@ -1,6 +1,6 @@
 @extends('layout.main') @section('content')
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 <section class="forms">
     <div class="container-fluid">
@@ -58,7 +58,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-3">
+                                <!-- <div class="row mt-3">
                                     <div class="col-md-12">
                                         <label>{{trans('file.Select Product')}}</label>
                                         <div class="search-box input-group">
@@ -66,7 +66,7 @@
                                             <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="Please type product code and select..." class="form-control" />
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="row mt-5">
                                     <div class="col-md-12">
                                         <h5>{{trans('file.Order Table')}} *</h5>
@@ -76,24 +76,25 @@
                                                     <tr>
                                                         <th>{{trans('file.name')}}</th>
                                                         <th>{{trans('file.Code')}}</th>
-                                                        <th>{{trans('file.Quantity')}}</th>
-                                                        <th>{{trans('file.Batch No')}}</th>
+                                                        <th>{{trans('file.Weight')}}</th>
+                                                        <th>{{trans('file.Net Price')}}</th>
+                                                        <!-- <th>{{trans('file.Batch No')}}</th>
                                                         <th>{{trans('file.Net Unit Price')}}</th>
                                                         <th>{{trans('file.Discount')}}</th>
                                                         <th>{{trans('file.Tax')}}</th>
-                                                        <th>{{trans('file.Subtotal')}}</th>
+                                                        <th>{{trans('file.Subtotal')}}</th> -->
                                                         <th><i class="dripicons-trash"></i></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php 
+                                                    <?php
                                                     $temp_unit_name = [];
                                                     $temp_unit_operator = [];
                                                     $temp_unit_operation_value = [];
                                                     ?>
                                                     @foreach($lims_product_sale_data as $product_sale)
                                                     <tr>
-                                                    <?php 
+                                                    <?php
                                                         $product_data = DB::table('products')->find($product_sale->product_id);
                                                         if($product_sale->variant_id){
                                                             $product_variant_data = \App\ProductVariant::select('id', 'item_code')->FindExactProduct($product_data->id, $product_sale->variant_id)->first();
@@ -102,12 +103,13 @@
                                                         }
                                                         else
                                                             $product_variant_id = null;
-                                                        if($product_data->tax_method == 1){
-                                                            $product_price = $product_sale->net_unit_price + ($product_sale->discount / $product_sale->qty);
-                                                        }
-                                                        elseif ($product_data->tax_method == 2) {
-                                                            $product_price =($product_sale->total / $product_sale->qty) + ($product_sale->discount / $product_sale->qty);
-                                                        }
+                                                            $product_price = $product_sale->net_unit_price;
+                                                        // if($product_data->tax_method == 1){
+                                                        //     $product_price = $product_sale->net_unit_price + ($product_sale->discount / $product_sale->qty);
+                                                        // }
+                                                        // elseif ($product_data->tax_method == 2) {
+                                                        //     $product_price =($product_sale->total / $product_sale->qty) + ($product_sale->discount / $product_sale->qty);
+                                                        // }
 
                                                         $tax = DB::table('taxes')->where('rate',$product_sale->tax_rate)->first();
                                                         $unit_name = array();
@@ -115,7 +117,7 @@
                                                         $unit_operation_value = array();
                                                         if($product_data->type == 'standard'){
                                                             $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
-                                
+
                                                             foreach($units as $unit) {
                                                                 if($product_sale->sale_unit_id == $unit->id) {
                                                                     array_unshift($unit_name, $unit->unit_name);
@@ -148,10 +150,16 @@
 
                                                         $product_batch_data = \App\ProductBatch::select('batch_no', 'expired_date')->find($product_sale->product_batch_id);
                                                     ?>
-                                                        <td>{{$product_data->name}} <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button> <input type="hidden" class="product-type" value="{{$product_data->type}}" /></td>
+                                                        <td>{{$product_data->name}}
+                                                            <!-- <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button>  -->
+                                                            <input type="hidden" class="product-type" value="{{$product_data->type}}" />
+                                                        </td>
                                                         <td>{{$product_data->code}}</td>
                                                         <td><input type="number" class="form-control qty" name="qty[]" value="{{$product_sale->qty}}" step="any" required/></td>
-                                                        @if($product_batch_data)
+                                                        <td><input type="number" class="form-control net_price" name="net_price[]" value="{{$product_sale->total}}" step="any" required /></td>
+
+
+                                                        <!-- @if($product_batch_data)
                                                         <td>
                                                             <input type="hidden" class="product-batch-id" name="product_batch_id[]" value="{{$product_sale->product_batch_id}}">
                                                             <input type="text" class="form-control batch-no" name="batch_no[]" value="{{$product_batch_data->batch_no}}" required/>
@@ -161,11 +169,11 @@
                                                             <input type="hidden" class="product-batch-id" name="product_batch_id[]" value="">
                                                             <input type="text" class="form-control batch-no" name="batch_no[]" value="" disabled />
                                                         </td>
-                                                        @endif
-                                                        <td class="net_unit_price">{{ number_format((float)$product_sale->net_unit_price, 2, '.', '') }} </td>
+                                                        @endif -->
+                                                        <!-- <td class="net_unit_price">{{ number_format((float)$product_sale->net_unit_price, 2, '.', '') }} </td>
                                                         <td class="discount">{{ number_format((float)$product_sale->discount, 2, '.', '') }}</td>
                                                         <td class="tax">{{ number_format((float)$product_sale->tax, 2, '.', '') }}</td>
-                                                        <td class="sub-total">{{ number_format((float)$product_sale->total, 2, '.', '') }}</td>
+                                                        <td class="sub-total">{{ number_format((float)$product_sale->total, 2, '.', '') }}</td> -->
                                                         <td><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>
                                                         <input type="hidden" class="product-code" name="product_code[]" value="{{$product_data->code}}"/>
                                                         <input type="hidden" class="product-id" name="product_id[]" value="{{$product_data->id}}"/>
@@ -191,11 +199,13 @@
                                                 <tfoot class="tfoot active">
                                                     <th colspan="2">{{trans('file.Total')}}</th>
                                                     <th id="total-qty">{{$lims_sale_data->total_qty}}</th>
-                                                    <th></th>
+                                                    <th id="total-price">{{ number_format((float)$lims_sale_data->total_price, 2, '.', '') }}</th>
+
+                                                    <!-- <th></th>
                                                     <th></th>
                                                     <th id="total-discount">{{ number_format((float)$lims_sale_data->total_discount, 2, '.', '') }}</th>
                                                     <th id="total-tax">{{ number_format((float)$lims_sale_data->total_tax, 2, '.', '')}}</th>
-                                                    <th id="total">{{ number_format((float)$lims_sale_data->total_price, 2, '.', '') }}</th>
+                                                    <th id="total">{{ number_format((float)$lims_sale_data->total_price, 2, '.', '') }}</th> -->
                                                     <th><i class="dripicons-trash"></i></th>
                                                 </tfoot>
                                             </table>
@@ -248,7 +258,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mt-3">
+                                <!-- <div class="row mt-3">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <input type="hidden" name="order_tax_rate_hidden" value="{{$lims_sale_data->order_tax_rate}}">
@@ -277,11 +287,11 @@
                                             <input type="number" name="shipping_cost" class="form-control" value="{{$lims_sale_data->shipping_cost}}" step="any" />
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
+                                </div> -->
+                                <!-- <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>{{trans('file.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i> 
+                                            <label>{{trans('file.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
                                             <input type="file" name="document" class="form-control" />
                                             @if($errors->has('extension'))
                                                 <span>
@@ -316,7 +326,7 @@
                                             <input type="hidden" name="paid_amount" value="{{$lims_sale_data->paid_amount}}" />
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -347,10 +357,10 @@
             <td><strong>{{trans('file.Items')}}</strong>
                 <span class="pull-right" id="item">0.00</span>
             </td>
-            <td><strong>{{trans('file.Total')}}</strong>
+            <td><strong>{{trans('file.Total Price')}}</strong>
                 <span class="pull-right" id="subtotal">0.00</span>
             </td>
-            <td><strong>{{trans('file.Order Tax')}}</strong>
+            <!-- <td><strong>{{trans('file.Order Tax')}}</strong>
                 <span class="pull-right" id="order_tax">0.00</span>
             </td>
             <td><strong>{{trans('file.Order Discount')}}</strong>
@@ -361,7 +371,7 @@
             </td>
             <td><strong>{{trans('file.grand total')}}</strong>
                 <span class="pull-right" id="grand_total">0.00</span>
-            </td>
+            </td> -->
         </table>
     </div>
     <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
@@ -548,7 +558,7 @@ $.get('../getproduct/' + id, function(data) {
     product_warehouse_price = data[7];
     batch_no = data[8];
     product_batch_id = data[9];
-    
+
     $.each(product_code, function(index) {
         if(exist_code.includes(product_code[index])) {
             pos = exist_code.indexOf(product_code[index]);
@@ -709,7 +719,7 @@ $("#myTable").on("change", ".batch-no", function () {
         else {
             $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-batch-id').val(data['product_batch_id']);
             code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-code').val();
-            console.log(code);
+            // console.log(code);
             pos = product_code.indexOf(code);
             product_qty[pos] = data['qty'];
         }
@@ -794,7 +804,7 @@ function productSearch(data){
                 else {
                     product_price.splice(rowindex, 0, parseFloat(data[2] * currency['exchange_rate']) + parseFloat(data[2] * currency['exchange_rate'] * customer_group_rate));
                 }
-                
+
                 product_discount.splice(rowindex, 0, '0.00');
                 tax_rate.splice(rowindex, 0, parseFloat(data[3]));
                 tax_name.splice(rowindex, 0, data[4]);
@@ -886,12 +896,12 @@ function checkQuantity(sale_qty, flag) {
             }
         });
     }
-    
+
     if(!flag){
         $('#editModal').modal('hide');
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val(sale_qty);
     }
-        
+
     calculateRowProductData(sale_qty);
 }
 

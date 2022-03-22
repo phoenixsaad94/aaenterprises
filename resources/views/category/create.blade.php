@@ -157,7 +157,6 @@
     }
 
     var category_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
 
     $.ajaxSetup({
         headers: {
@@ -264,7 +263,6 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
                         category_id.length = 0;
                         $(':checkbox:checked').each(function(i){
                             if(i){
@@ -286,9 +284,6 @@
                         }
                         else if(!category_id.length)
                             alert('No category is selected!');
-                    }
-                    else
-                        alert('This feature is disable for demo!');
                 }
             },
             {

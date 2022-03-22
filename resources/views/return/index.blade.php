@@ -1,9 +1,9 @@
 @extends('layout.main') @section('content')
 @if(session()->has('message'))
-  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div> 
+  <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message') !!}</div>
 @endif
 @if(session()->has('not_permitted'))
-  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div> 
+  <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
 @endif
 
 <section>
@@ -129,8 +129,7 @@
 
     var all_permission = <?php echo json_encode($all_permission) ?>;
     var return_id = [];
-    var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -244,33 +243,29 @@
                 text: '{{trans("file.delete")}}',
                 className: 'buttons-delete',
                 action: function ( e, dt, node, config ) {
-                    if(user_verified == '1') {
-                        return_id.length = 0;
-                        $(':checkbox:checked').each(function(i){
-                            if(i){
-                                var returns = $(this).closest('tr').data('return');
-                                return_id[i-1] = returns[13];
+                    return_id.length = 0;
+                    $(':checkbox:checked').each(function(i){
+                        if(i){
+                            var returns = $(this).closest('tr').data('return');
+                            return_id[i-1] = returns[13];
+                        }
+                    });
+                    if(return_id.length && confirm("Are you sure want to delete?")) {
+                        $.ajax({
+                            type:'POST',
+                            url:'return-sale/deletebyselection',
+                            data:{
+                                returnIdArray: return_id
+                            },
+                            success:function(data){
+                                alert(data);
+                                dt.rows({ page: 'current', selected: true }).remove().draw(false);
                             }
                         });
-                        if(return_id.length && confirm("Are you sure want to delete?")) {
-                            $.ajax({
-                                type:'POST',
-                                url:'return-sale/deletebyselection',
-                                data:{
-                                    returnIdArray: return_id
-                                },
-                                success:function(data){
-                                    alert(data);
-                                    dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                                }
-                            });
-                            //dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                        }
-                        else if(!return_id.length)
-                            alert('Nothing is selected!');
+                        //dt.rows({ page: 'current', selected: true }).remove().draw(false);
                     }
-                    else
-                        alert('This feature is disable for demo!');
+                    else if(!return_id.length)
+                        alert('Nothing is selected!');
                 }
             },
             {
