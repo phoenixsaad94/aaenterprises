@@ -1268,7 +1268,9 @@ class WashingController extends Controller
                 $payment_data->delete();
             }
 
-            $lims_washing_data->delete();
+            if($lims_washing_data){
+                $lims_washing_data->delete();
+            }
         }
         return 'Washing deleted successfully!';
     }
@@ -1335,7 +1337,10 @@ class WashingController extends Controller
             //     $payment_data->delete();
             // }
 
-            $lims_washing_data->delete();
+            if($lims_washing_data){
+                $lims_washing_data->delete();
+            }
+
             return redirect('washings')->with('not_permitted', 'Washing deleted successfully');
         }
 

@@ -49,9 +49,9 @@
       <li class="nav-item">
         <a class="nav-link" href="#customer-payments" role="tab" data-toggle="tab">{{trans('file.Payment')}}</a>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link" href="#customer-quotation" role="tab" data-toggle="tab">{{trans('file.Quotation')}}</a>
-      </li>
+      </li> -->
       <li class="nav-item">
         <a class="nav-link" href="#customer-return" role="tab" data-toggle="tab">{{trans('file.return')}}</a>
       </li>
@@ -79,17 +79,17 @@
                         @foreach($lims_sale_data as $key=>$sale)
                         <tr>
                             <td>{{$key}}</td>
-                            
+
                             <td>{{date($general_setting->date_format, strtotime($sale->created_at->toDateString())) . ' '. $sale->created_at->toTimeString()}}</td>
                             <td>{{$sale->reference_no}}</td>
                             <td>{{$sale->warehouse->name}}</td>
                             <td>
                                 @foreach($lims_product_sale_data[$key] as $product_sale_data)
-                                <?php 
+                                <?php
                                     $product = App\Product::select('name')->find($product_sale_data->product_id);
                                     if($product_sale_data->variant_id) {
                                         $variant = App\Variant::find($product_sale_data->variant_id);
-                                        $product->name .= ' ['.$variant->name.']'; 
+                                        $product->name .= ' ['.$variant->name.']';
                                     }
                                     $unit = App\Unit::find($product_sale_data->sale_unit_id);
                                 ?>
@@ -192,7 +192,7 @@
                             <td>{{$return->biller->name}}</td>
                             <td>
                                 @foreach($lims_product_return_data[$key] as $product_return_data)
-                                <?php 
+                                <?php
                                     $product = App\Product::select('name')->find($product_return_data->product_id);
                                     if($product_return_data->variant_id) {
                                         $variant = App\Variant::find($product_return_data->variant_id);
@@ -259,7 +259,7 @@
                             @endif
                             <td>
                                 @foreach($lims_product_quotation_data[$key] as $product_quotation_data)
-                                <?php 
+                                <?php
                                     $product = App\Product::select('name')->find($product_quotation_data->product_id);
                                     if($product_quotation_data->variant_id) {
                                         $variant = App\Variant::find($product_quotation_data->variant_id);

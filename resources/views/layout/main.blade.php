@@ -716,12 +716,12 @@
                   @endif
                   @if($daily_purchase_active)
                   <li id="daily-purchase-report-menu">
-                    <a href="{{url('report/daily_purchase/'.date('Y').'/'.date('m'))}}">{{trans('file.Daily Purchase')}}</a>
+                    <a href="{{url('report/daily_purchase/'.date('Y').'/'.date('m'))}}">{{trans('file.Daily Import')}}</a>
                   </li>
                   @endif
                   @if($monthly_purchase_active)
                   <li id="monthly-purchase-report-menu">
-                    <a href="{{url('report/monthly_purchase/'.date('Y'))}}">{{trans('file.Monthly Purchase')}}</a>
+                    <a href="{{url('report/monthly_purchase/'.date('Y'))}}">{{trans('file.Monthly Import')}}</a>
                   </li>
                   @endif
                   @if($sale_report_active)

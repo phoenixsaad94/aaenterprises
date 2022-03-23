@@ -1272,7 +1272,9 @@ class PurchaseController extends Controller
                 $payment_data->delete();
             }
 
-            $lims_purchase_data->delete();
+            if($lims_purchase_data){
+                $lims_purchase_data->delete();
+            }
         }
         return 'Purchase deleted successfully!';
     }
@@ -1339,7 +1341,10 @@ class PurchaseController extends Controller
                 $payment_data->delete();
             }
 
-            $lims_purchase_data->delete();
+            if($lims_purchase_data){
+                $lims_purchase_data->delete();
+            }
+
             return redirect('purchases')->with('not_permitted', 'Purchase deleted successfully');;
         }
 

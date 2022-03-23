@@ -2,11 +2,11 @@
 @section('content')
 <section>
 	<div class="container-fluid">
-		<div class="card"> 
-			<div class="card-body"> 
+		<div class="card">
+			<div class="card-body">
 				{{ Form::open(['route' => ['report.dailyPurchaseByWarehouse', $year, $month], 'method' => 'post', 'id' => 'report-form']) }}
 				<input type="hidden" name="warehouse_id_hidden" value="{{$warehouse_id}}">
-				<h4 class="text-center">{{trans('file.Daily Purchase Report')}} &nbsp;&nbsp;
+				<h4 class="text-center">{{trans('file.Daily Import Report')}} &nbsp;&nbsp;
 				<select class="selectpicker" id="warehouse_id" name="warehouse_id">
 					<option value="0">{{trans('file.All Warehouse')}}</option>
 					@foreach($lims_warehouse_list as $warehouse)
@@ -33,7 +33,7 @@
 							    <td><strong>Friday</strong></td>
 							    <td><strong>Saturday</strong></td>
 						    </tr>
-						    <?php 
+						    <?php
 						    	$i = 1;
 						    	$flag = 0;
 						    	while ($i <= $number_of_day) {
@@ -110,7 +110,7 @@
 				</div>
 			</div>
 		</div>
-	</div>	
+	</div>
 </section>
 
 <script type="text/javascript">

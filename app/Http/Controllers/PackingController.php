@@ -1279,7 +1279,9 @@ class PackingController extends Controller
                 $payment_data->delete();
             }
 
-            $lims_packing_data->delete();
+            if($lims_packing_data){
+                $lims_packing_data->delete();
+            }
         }
         return 'Packing deleted successfully!';
     }
@@ -1346,7 +1348,10 @@ class PackingController extends Controller
             //     $payment_data->delete();
             // }
 
-            $lims_packing_data->delete();
+            if($lims_packing_data){
+                $lims_packing_data->delete();
+            }
+
             return redirect('packings')->with('not_permitted', 'Packing deleted successfully');
         }
 

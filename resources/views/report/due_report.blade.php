@@ -20,7 +20,7 @@
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
             {!! Form::close() !!}
         </div>
@@ -46,7 +46,7 @@
                     <?php
                         $customer = DB::table('customers')->find($sale_data->customer_id);
                     ?>
-                    <td>{{$customer->name .' (' .$customer->phone_number . ')'}}</td>
+                    <td>{{($customer ? $customer->name : "").' (' .($customer ? $customer->phone_number : ""). ')'}}</td>
                     @if($sale_data->paid_amount)
                     <td>{{number_format((float)$sale_data->paid_amount, 2, '.', '')}}</td>
                     @else

@@ -1271,7 +1271,9 @@ class SortingController extends Controller
                 $payment_data->delete();
             }
 
-            $lims_sorting_data->delete();
+            if($lims_sorting_data){
+                $lims_sorting_data->delete();
+            }
         }
         return 'Sorting deleted successfully!';
     }
@@ -1338,7 +1340,10 @@ class SortingController extends Controller
             //     $payment_data->delete();
             // }
 
-            $lims_sorting_data->delete();
+            if($lims_sorting_data){
+                $lims_sorting_data->delete();
+            }
+
             return redirect('sortings')->with('not_permitted', 'Sorting deleted successfully');
         }
 

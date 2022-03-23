@@ -98,10 +98,13 @@
         ['permission_id', $price_permission->id],
         ['role_id', $role->id]
     ])->first();
+    $price_active = false;
+    if($price_permission_active){
+        $price_active = true;
+    }
 ?>
 
-<input type="hidden" id="price_permission" name="price_permission" value="{{$price_permission_active}}" />
-
+<input type="hidden" id="price_permission" name="price_permission" value="{{$price_active}}" />
 
 <div id="purchase-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
     <div role="document" class="modal-dialog">

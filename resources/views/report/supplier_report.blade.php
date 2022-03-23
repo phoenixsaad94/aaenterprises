@@ -51,9 +51,9 @@
       <li class="nav-item">
         <a class="nav-link" href="#supplier-return" role="tab" data-toggle="tab">{{trans('file.Return')}}</a>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link" href="#supplier-quotation" role="tab" data-toggle="tab">{{trans('file.Quotation')}}</a>
-      </li>
+      </li> -->
     </ul>
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane fade show active" id="supplier-purchase">
@@ -76,7 +76,7 @@
                         @foreach($lims_purchase_data as $key=>$purchase)
                         <tr>
                             <td>{{$key}}</td>
-                            <?php 
+                            <?php
                                 if($purchase->status == 1)
                                     $status = 'Recieved';
                                 elseif($purchase->status == 2)
@@ -91,7 +91,7 @@
                             <td>{{$purchase->warehouse->name}}</td>
                             <td>
                                 @foreach($lims_product_purchase_data[$key] as $product_purchase_data)
-                                <?php 
+                                <?php
                                     $product = App\Product::select('name')->find($product_purchase_data->product_id);
                                     if($product_purchase_data->variant_id) {
                                         $variant = App\Variant::find($product_purchase_data->variant_id);
@@ -187,7 +187,7 @@
                             <td>{{$return->warehouse->name}}</td>
                             <td>
                                 @foreach($lims_product_return_data[$key] as $product_return_data)
-                                <?php 
+                                <?php
                                     $product = App\Product::select('name')->find($product_return_data->product_id);
                                     if($product_return_data->variant_id) {
                                         $variant = App\Variant::find($product_return_data->variant_id);
@@ -240,7 +240,7 @@
                         @foreach($lims_quotation_data as $key=>$quotation)
                         <tr>
                             <td>{{$key}}</td>
-                            <?php 
+                            <?php
                                 if($quotation->quotation_status == 1)
                                     $status = 'Pending';
                                 elseif($quotation->quotation_status == 2)
@@ -252,7 +252,7 @@
                             <td>{{$quotation->customer->name}}</td>
                             <td>
                                 @foreach($lims_product_quotation_data[$key] as $product_quotation_data)
-                                <?php 
+                                <?php
                                     $product = App\Product::select('name')->find($product_quotation_data->product_id);
                                     if($product_quotation_data->variant_id) {
                                         $variant = App\Variant::find($product_quotation_data->variant_id);

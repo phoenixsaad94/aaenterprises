@@ -1268,7 +1268,9 @@ class CaringController extends Controller
                 $payment_data->delete();
             }
 
-            $lims_caring_data->delete();
+            if($lims_caring_data){
+                $lims_caring_data->delete();
+            }
         }
         return 'Caring deleted successfully!';
     }
@@ -1335,7 +1337,10 @@ class CaringController extends Controller
             //     $payment_data->delete();
             // }
 
-            $lims_caring_data->delete();
+            if($lims_caring_data){
+                $lims_caring_data->delete();
+            }
+
             return redirect('carings')->with('not_permitted', 'Caring deleted successfully');
         }
 
